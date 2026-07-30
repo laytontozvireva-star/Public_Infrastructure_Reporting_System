@@ -1,24 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ReportIssue from "./pages/ReportIssue";
+import MyReports from "./pages/MyReports";
+import Footer from "./components/Footer";
+
+// Redirects logged-in users away from login/register pages
+function PublicRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? <Navigate to="/my-reports" replace /> : children;
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Navbar />
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
+          <Route path="/report" element={<ReportIssue />} />
+          <Route path="/my-reports" element={<MyReports />} />
+        </Routes>
+
+        <Footer />
+      </Router>
+    </AuthProvider>
   );
 }
 
