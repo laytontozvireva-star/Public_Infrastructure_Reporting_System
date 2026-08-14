@@ -5,7 +5,7 @@ import { Sun, Moon, Menu, X, LogIn, LogOut } from "lucide-react";
 
 /**
  * Follows the same style guide as Home.jsx:
- * - Dark Slate Blue (#1E293B) for the header — establishes hierarchy.
+ * - Dark Slate Blue (#1E293B) for the header â€” establishes hierarchy.
  * - Alert Orange (#F97316) reserved for the one primary action link
  *   ("Report Issue"), matching its role on the home page CTA buttons.
  * Everything else (dark-mode toggle, hamburger, login) stays neutral
@@ -71,9 +71,7 @@ function Navbar() {
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 text-white transition hover:opacity-90">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-lg font-black text-white">
-            P
-          </div>
+          <img src="/pirs-icon.svg" alt="" className="h-8 w-8" aria-hidden="true" />
           <span className="text-lg font-black tracking-wide">PIRS</span>
         </Link>
 
@@ -174,3 +172,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

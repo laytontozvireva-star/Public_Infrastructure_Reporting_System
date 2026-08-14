@@ -15,12 +15,12 @@ import {
 
 /**
  * Same style guide as Navbar.jsx / Home.jsx:
- * - Dark Slate Blue (#1E293B) — hardcoded directly rather than trusting
+ * - Dark Slate Blue (#1E293B) â€” hardcoded directly rather than trusting
  *   var(--pirs-nav-bg), same reasoning as the navbar rework.
- * - Alert Orange (#F97316) on "Get Started Free" — it's a primary action,
+ * - Alert Orange (#F97316) on "Get Started Free" â€” it's a primary action,
  *   so it gets the same color as every other primary action in the app
  *   instead of an unconfirmed btn-primary class.
- * - Fresh Green (#10B981) stays on the "systems operational" dot — a
+ * - Fresh Green (#10B981) stays on the "systems operational" dot â€” a
  *   genuine resolved/good-state indicator, so green is the right call here.
  * The unused `categories` list from the original file is now actually
  * rendered as a compact icon column, since Quick Links already points to
@@ -54,7 +54,7 @@ function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-lg font-black text-white">P</div>
+              <img src="/pirs-icon.svg" alt="" className="h-8 w-8" aria-hidden="true" />
               <span className="text-lg font-black text-white tracking-wide">PIRS</span>
             </div>
             <p className="text-sm leading-relaxed text-slate-400">
@@ -139,7 +139,7 @@ function Footer() {
           className="mt-10 flex flex-col items-center justify-between gap-3 border-t pt-6 text-xs text-slate-500 sm:flex-row"
           style={{ borderColor: "rgba(255,255,255,0.08)" }}
         >
-          <p>© {new Date().getFullYear()} Public Infrastructure Reporting System. Developed by Layton Tozvireva.</p>
+          <p>Â© {new Date().getFullYear()} Public Infrastructure Reporting System. Developed by Layton Tozvireva.</p>
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#10B981] animate-pulse"></span>
             <span>All systems operational</span>
@@ -151,3 +151,4 @@ function Footer() {
 }
 
 export default Footer;
+

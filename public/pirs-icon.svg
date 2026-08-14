@@ -1,0 +1,8 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title>PIRS public infrastructure reporting icon</title>
+  <rect width="128" height="128" rx="28" fill="#F97316"/>
+  <path d="M64 20c-19.9 0-36 16.1-36 36 0 26.5 36 53 36 53s36-26.5 36-53c0-19.9-16.1-36-36-36Z" fill="#fff"/>
+  <circle cx="64" cy="56" r="13" fill="#1E293B"/>
+  <path d="M47 92h34" stroke="#1E293B" stroke-width="6" stroke-linecap="round"/>
+  <path d="M64 92v19M51 111h26" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+</svg>
