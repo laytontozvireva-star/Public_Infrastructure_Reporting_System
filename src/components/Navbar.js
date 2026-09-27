@@ -39,11 +39,12 @@ function Navbar() {
     navigate("/");
   };
 
-  const navLinks = [
-    { to: "/", label: "Home", end: true },
-    { to: "/report", label: "Report Issue", accent: true },
-    ...(user ? [{ to: "/my-reports", label: "My Reports" }] : []),
-  ];
+ const navLinks = [
+  { to: "/", label: "Home", end: true },
+  { to: "/report", label: "Report Issue", accent: true },
+  { to: "/knowledge", label: "Knowledge" },
+  ...(user ? [{ to: "/my-reports", label: "My Reports" }] : []),
+];
 
   const linkClass = ({ isActive }) =>
     [
