@@ -1,3 +1,4 @@
+import Knowledge from "./pages/Knowledge";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
@@ -41,6 +42,7 @@ function App() {
           />
           <Route path="/report" element={<ReportIssue />} />
           <Route path="/my-reports" element={<MyReports />} />
+          <Route path="/knowledge" element={<Knowledge />} />
         </Routes>
 
         <Footer />
