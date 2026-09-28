@@ -29,7 +29,7 @@ PIRS Knowledge Base </p>
       ].map((category) => (
         <div
           key={category}
-          className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-transtone-y-1 hover:shadow-md"
         >
           <h2 className="text-lg font-semibold text-gray-900">
             {category}

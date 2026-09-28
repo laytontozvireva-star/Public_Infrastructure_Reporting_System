@@ -15,7 +15,7 @@ import {
 
 /**
  * Follows the same style guide as Home.jsx / Navbar.jsx:
- * - Alert Orange (#F97316) marks the one primary action on this page —
+ * - Alert Orange (#FF6C16) marks the one primary action on this page —
  *   submitting the report — on both the header icon and the submit button.
  * - Fresh Green (#10B981) marks a successful/resolved state: the captured
  *   GPS coordinates confirmation.
@@ -83,8 +83,8 @@ function ReportIssue() {
 
         {/* Page header */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F97316] shadow-lg shadow-orange-500/25">
-            <AlertTriangle size={30} strokeWidth={2} className="text-white" aria-hidden="true" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FF6C16] shadow-lg shadow-orange-500/25">
+            <AlertTriangle size={30} strokeWidth={2} className="text-[#F7F5F1]" aria-hidden="true" />
           </div>
           <h1 className="section-title mb-2">Report Infrastructure Issue</h1>
           <p className="section-subtitle">Help improve your community by documenting the problem below.</p>
@@ -190,7 +190,7 @@ function ReportIssue() {
 
             {/* Submit — the primary action on this page: Alert Orange */}
             <button type="submit" disabled={loading || !user}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#F97316] py-4 text-base font-bold text-white shadow-lg shadow-orange-500/25 transition hover:bg-[#EA6A0C] disabled:opacity-60">
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#FF6C16] py-4 text-base font-bold text-[#F7F5F1] shadow-lg shadow-orange-500/25 transition hover:bg-[#EA6A0C] disabled:opacity-60">
               {loading ? (
                 <>
                   <Loader2 size={20} strokeWidth={2} className="animate-spin" aria-hidden="true" />

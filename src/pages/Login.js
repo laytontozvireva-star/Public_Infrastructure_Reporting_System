@@ -5,7 +5,7 @@ import { KeyRound, XCircle, ArrowRight, ArrowLeft, Loader2 } from 'lucide-react'
 
 /**
  * Same style guide as the rest of the app:
- * - Alert Orange (#F97316) on the header icon and the Login button — Login
+ * - Alert Orange (#FF6C16) on the header icon and the Login button — Login
  *   is the one primary action on this page, so both echo the same color
  *   (matches the pattern used on the Report Issue page header + submit).
  * - "Create Free Account" is a secondary path off this page, not the
@@ -44,8 +44,8 @@ function Login() {
 
           {/* Header */}
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F97316] shadow-lg shadow-orange-500/25">
-              <KeyRound size={30} strokeWidth={2} className="text-white" aria-hidden="true" />
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FF6C16] shadow-lg shadow-orange-500/25">
+              <KeyRound size={30} strokeWidth={2} className="text-[#F7F5F1]" aria-hidden="true" />
             </div>
             <h1 className="text-3xl font-black tracking-tight" style={{ color: "var(--pirs-text)" }}>Welcome Back</h1>
             <p className="mt-1 text-sm" style={{ color: "var(--pirs-muted)" }}>Log in to manage and track your reports</p>
@@ -81,7 +81,7 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#F97316] py-3.5 text-base font-bold text-white shadow-lg shadow-orange-500/25 transition hover:bg-[#EA6A0C] disabled:opacity-60"
+              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#FF6C16] py-3.5 text-base font-bold text-[#F7F5F1] shadow-lg shadow-orange-500/25 transition hover:bg-[#EA6A0C] disabled:opacity-60"
             >
               {loading ? (
                 <>
@@ -106,7 +106,7 @@ function Login() {
 
           <Link
             to="/register"
-            className="flex w-full items-center justify-center rounded-xl border border-slate-200 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
+            className="flex w-full items-center justify-center rounded-xl border border-stone-200 py-3 text-base font-semibold text-stone-700 transition hover:bg-stone-50"
           >
             Create Free Account
           </Link>
@@ -114,7 +114,7 @@ function Login() {
 
         {/* Back home */}
         <p className="mt-6 text-center text-sm" style={{ color: "var(--pirs-muted)" }}>
-          <Link to="/" className="inline-flex items-center gap-1 text-slate-500 transition hover:text-slate-800 hover:underline">
+          <Link to="/" className="inline-flex items-center gap-1 text-stone-500 transition hover:text-stone-800 hover:underline">
             <ArrowLeft size={14} strokeWidth={2.25} aria-hidden="true" />
             Back to Home
           </Link>

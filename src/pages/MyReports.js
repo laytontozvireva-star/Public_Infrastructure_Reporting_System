@@ -16,26 +16,30 @@ import {
   Trash2,
   TreePine,
   Construction,
+  MapPin,
+  Calendar,
+  Hash,
 } from 'lucide-react';
 
-/**
- * State-indicator colors follow the style guide exactly:
- * - Completed  → Fresh Green  #10B981 (resolved)
- * - In Progress→ Amber        #F59E0B (currently in progress)
- * - Pending    → neutral slate — the guide only defines colors for
- *   "resolved" and "in progress," so a status that is neither gets no
- *   color at all rather than borrowing one that already means something
- *   else (the old amber-for-pending/blue-for-in-progress mapping put
- *   amber on the wrong status entirely).
- * "New Report" / "Go to Login" / "Submit Your First Report" are primary
- * actions, so they use Alert Orange (#F97316) directly rather than a
- * `btn-primary` class of unconfirmed color.
- */
-
 const statusConfig = {
-  'Pending':     { dot: 'bg-slate-400',    bar: 'bg-slate-400',              width: 'w-1/4',  pct: '25%',  label: 'Awaiting review', badgeBg: 'bg-slate-100 text-slate-600' },
-  'In Progress': { dot: 'bg-[#F59E0B]',    bar: 'bg-[#F59E0B]',              width: 'w-3/5',  pct: '60%',  label: 'Being addressed', badgeBg: 'bg-amber-50 text-[#B45309]' },
-  'Completed':   { dot: 'bg-[#10B981]',    bar: 'bg-[#10B981]',              width: 'w-full', pct: '100%', label: 'Resolved',        badgeBg: 'bg-emerald-50 text-[#0F9D74]' },
+  'Pending':     { 
+    dot: 'bg-stone-400 dark:bg-stone-500', 
+    bar: 'bg-stone-400 dark:bg-stone-500', 
+    width: 'w-1/4',  pct: '25%',  label: 'Awaiting review', 
+    badgeBg: 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700' 
+  },
+  'In Progress': { 
+    dot: 'bg-amber-500', 
+    bar: 'bg-amber-500', 
+    width: 'w-3/5',  pct: '60%',  label: 'Being addressed', 
+    badgeBg: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50' 
+  },
+  'Completed':   { 
+    dot: 'bg-emerald-500', 
+    bar: 'bg-emerald-500', 
+    width: 'w-full', pct: '100%', label: 'Resolved',        
+    badgeBg: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50' 
+  },
 };
 
 const categoryIcon = {
@@ -43,7 +47,7 @@ const categoryIcon = {
   'Traffic Lights': TrafficCone, 'Illegal Dumping': Trash2, 'Fallen Trees': TreePine, 'Other': Construction,
 };
 
-const primaryBtn = "inline-flex items-center justify-center gap-2 rounded-lg bg-[#F97316] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition hover:bg-[#EA6A0C]";
+const primaryBtn = "inline-flex items-center justify-center gap-2 rounded-lg bg-[#FF6C16] px-5 py-2.5 text-sm font-semibold text-[#F7F5F1] transition-colors hover:bg-[#EA6A0C]";
 
 function MyReports() {
   const { user, loading: authLoading } = useAuth();
@@ -64,14 +68,12 @@ function MyReports() {
   // Not logged in
   if (!authLoading && !user) {
     return (
-      <div className="page-wrapper flex items-center justify-center">
-        <div className="card p-12 text-center max-w-md w-full animate-fade-in">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl" style={{ backgroundColor: "var(--pirs-surface-2)" }}>
-            <Lock size={30} strokeWidth={1.75} style={{ color: "var(--pirs-muted)" }} aria-hidden="true" />
-          </div>
-          <h2 className="text-2xl font-black mb-2" style={{ color: "var(--pirs-text)" }}>Login Required</h2>
-          <p className="mb-8 text-sm" style={{ color: "var(--pirs-muted)" }}>You need to be logged in to view your reports.</p>
-          <Link to="/login" className={primaryBtn}>Go to Login</Link>
+      <div className="flex min-h-[60vh] items-center justify-center bg-[#F8FAFC] dark:bg-[#181513] p-4 transition-colors duration-200">
+        <div className="w-full max-w-md rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#241F1C] p-8 text-center shadow-sm">
+          <Lock size={32} strokeWidth={2} className="mx-auto mb-4 text-stone-400 dark:text-stone-500" />
+          <h2 className="mb-2 text-xl font-bold text-stone-900 dark:text-[#F7F5F1]">Authentication Required</h2>
+          <p className="mb-6 text-sm text-stone-600 dark:text-stone-400">Please sign in to view and manage your submitted reports.</p>
+          <Link to="/login" className={primaryBtn}>Sign In</Link>
         </div>
       </div>
     );
@@ -82,41 +84,41 @@ function MyReports() {
   const completed  = reports.filter(r => r.status === 'Completed').length;
 
   return (
-    <div className="page-wrapper">
-      <div className="mx-auto max-w-5xl animate-fade-in">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#181513] py-10 transition-colors duration-200">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6">
 
-        {/* Header */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Header Section */}
+        <div className="mb-8 flex flex-col gap-4 border-b border-stone-200 dark:border-stone-800 pb-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="section-title mb-1">My Reports</h1>
-            <p className="section-subtitle">Track your submitted infrastructure reports.</p>
+            <h1 className="text-2xl font-bold text-stone-900 dark:text-[#F7F5F1] mb-1">My Reports</h1>
+            <p className="text-sm text-stone-600 dark:text-stone-400">Track and manage your submitted infrastructure issues.</p>
           </div>
-          <Link to="/report" className={`${primaryBtn} shrink-0`}>
-            <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
+          <Link to="/report" className={primaryBtn}>
+            <Plus size={16} strokeWidth={2} />
             New Report
           </Link>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="alert-error mb-6 flex items-center gap-2">
-            <XCircle size={18} strokeWidth={2} aria-hidden="true" />
+          <div className="mb-6 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400">
+            <XCircle size={18} />
             <span>{error}</span>
           </div>
         )}
 
-        {/* Stats strip — neutral for plain counts, amber/green only where they mean "in progress" / "resolved" */}
+        {/* Stats strip */}
         {!loading && reports.length > 0 && (
           <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-              { label: 'Total',       value: reports.length, color: 'text-slate-700',   bg: 'bg-slate-50' },
-              { label: 'Pending',     value: pending,        color: 'text-slate-700',   bg: 'bg-slate-50' },
-              { label: 'In Progress', value: inProgress,     color: 'text-[#B45309]',   bg: 'bg-amber-50' },
-              { label: 'Completed',   value: completed,      color: 'text-[#0F9D74]',   bg: 'bg-emerald-50' },
-            ].map((s) => (
-              <div key={s.label} className={`card rounded-xl px-4 py-5 text-center ${s.bg}`}>
-                <div className={`text-3xl font-black ${s.color}`}>{s.value}</div>
-                <div className="text-xs font-medium mt-1" style={{ color: "var(--pirs-muted)" }}>{s.label}</div>
+              { label: 'Total', value: reports.length, color: 'text-stone-900 dark:text-[#F7F5F1]', bg: 'bg-white dark:bg-[#241F1C]', border: 'border-stone-200 dark:border-stone-700' },
+              { label: 'Pending', value: pending, color: 'text-stone-700 dark:text-stone-300', bg: 'bg-white dark:bg-[#241F1C]', border: 'border-stone-200 dark:border-stone-700' },
+              { label: 'In Progress', value: inProgress, color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/10', border: 'border-amber-200 dark:border-amber-900/30' },
+              { label: 'Resolved', value: completed, color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/10', border: 'border-emerald-200 dark:border-emerald-900/30' },
+            ].map((s, idx) => (
+              <div key={idx} className={`rounded-xl border ${s.border} ${s.bg} p-4 sm:p-5 shadow-sm`}>
+                <div className={`text-2xl font-bold ${s.color} mb-1`}>{s.value}</div>
+                <div className="text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide">{s.label}</div>
               </div>
             ))}
           </div>
@@ -124,79 +126,79 @@ function MyReports() {
 
         {/* Loading */}
         {loading && (
-          <div className="flex justify-center py-20">
-            <Loader2 size={40} strokeWidth={2} className="animate-spin text-slate-400" aria-hidden="true" />
+          <div className="flex items-center gap-3 py-12 text-stone-500 dark:text-stone-400 justify-center">
+            <Loader2 size={24} className="animate-spin text-[#FF6C16]" />
+            <span className="text-sm font-medium">Loading reports...</span>
           </div>
         )}
 
         {/* Empty state */}
         {!loading && reports.length === 0 && (
-          <div className="card p-14 text-center animate-fade-in">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl" style={{ backgroundColor: "var(--pirs-surface-2)" }}>
-              <ClipboardList size={40} strokeWidth={1.5} style={{ color: "var(--pirs-muted)" }} aria-hidden="true" />
-            </div>
-            <h2 className="text-2xl font-black mb-2" style={{ color: "var(--pirs-text)" }}>No Reports Yet</h2>
-            <p className="mb-8 text-sm" style={{ color: "var(--pirs-muted)" }}>You haven't submitted any infrastructure reports yet.</p>
-            <Link to="/report" className={primaryBtn}>Submit Your First Report</Link>
+          <div className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#241F1C] p-12 text-center shadow-sm">
+            <ClipboardList size={32} strokeWidth={1.5} className="mx-auto mb-3 text-stone-400 dark:text-stone-500" />
+            <h2 className="mb-2 text-lg font-bold text-stone-900 dark:text-[#F7F5F1]">No Reports Found</h2>
+            <p className="mb-6 text-sm text-stone-600 dark:text-stone-400">You haven't submitted any infrastructure reports yet.</p>
+            <Link to="/report" className={primaryBtn}>
+              <Plus size={16} strokeWidth={2} />
+              Submit Report
+            </Link>
           </div>
         )}
 
         {/* Reports list */}
         {!loading && reports.length > 0 && (
-          <div className="space-y-5">
-            {reports.map((report, i) => {
+          <div className="space-y-4">
+            {reports.map((report) => {
               const cfg = statusConfig[report.status] || statusConfig['Pending'];
               const CategoryIcon = categoryIcon[report.category] || Construction;
               return (
-                <div key={report.id} className={`card p-6 animate-fade-in stagger-${Math.min(i + 1, 4)}`}>
-                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
-
-                    {/* Category icon */}
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-                      style={{ backgroundColor: "var(--pirs-surface-2)", border: "1px solid var(--pirs-border)" }}>
-                      <CategoryIcon size={22} strokeWidth={1.75} style={{ color: "var(--pirs-text)" }} aria-hidden="true" />
+                <div key={report.id} className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#241F1C] p-5 sm:p-6 shadow-sm">
+                  <div className="flex flex-col sm:flex-row gap-5">
+                    
+                    {/* Category Icon */}
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700">
+                      <CategoryIcon size={20} strokeWidth={2} className="text-stone-600 dark:text-stone-300" />
                     </div>
-
-                    {/* Info */}
+                    
+                    {/* Details */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <h2 className="text-xl font-bold truncate" style={{ color: "var(--pirs-text)" }}>{report.title}</h2>
-                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${cfg.badgeBg}`}>
+                      <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+                        <h2 className="text-lg font-semibold text-stone-900 dark:text-[#F7F5F1] truncate">{report.title}</h2>
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${cfg.badgeBg}`}>
                           <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`}></span>
                           {report.status}
                         </span>
                       </div>
 
-                      <p className="text-sm mb-3 line-clamp-2" style={{ color: "var(--pirs-muted)" }}>{report.description}</p>
+                      <p className="text-sm text-stone-600 dark:text-stone-400 mb-4 line-clamp-2">{report.description}</p>
 
-                      <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs" style={{ color: "var(--pirs-muted)" }}>
-                        <span><span className="font-semibold" style={{ color: "var(--pirs-text)" }}>ID:</span> #{report.id.slice(0, 8).toUpperCase()}</span>
-                        <span><span className="font-semibold" style={{ color: "var(--pirs-text)" }}>Category:</span> {report.category}</span>
-                        <span><span className="font-semibold" style={{ color: "var(--pirs-text)" }}>Date:</span> {new Date(report.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-stone-500 dark:text-stone-400 mb-5">
+                        <span className="flex items-center gap-1.5"><Hash size={14} /> {report.id.slice(0, 8).toUpperCase()}</span>
+                        <span className="flex items-center gap-1.5"><Calendar size={14} /> {new Date(report.created_at).toLocaleDateString('en-GB')}</span>
                         {report.latitude && (
-                          <span><span className="font-semibold" style={{ color: "var(--pirs-text)" }}>GPS:</span> {Number(report.latitude).toFixed(4)}, {Number(report.longitude).toFixed(4)}</span>
+                          <span className="flex items-center gap-1.5"><MapPin size={14} /> {Number(report.latitude).toFixed(4)}, {Number(report.longitude).toFixed(4)}</span>
                         )}
                       </div>
 
-                      {/* Progress bar */}
-                      <div className="mt-4">
-                        <div className="flex justify-between text-xs mb-1.5">
-                          <span style={{ color: "var(--pirs-muted)" }}>{cfg.label}</span>
-                          <span className="font-semibold" style={{ color: "var(--pirs-text)" }}>{cfg.pct}</span>
+                      {/* Progress Bar Area */}
+                      <div className="mt-auto">
+                        <div className="flex justify-between items-center text-xs font-medium mb-1.5">
+                          <span className="text-stone-500 dark:text-stone-400">{cfg.label}</span>
+                          <span className="text-stone-700 dark:text-stone-300">{cfg.pct}</span>
                         </div>
-                        <div className="h-1.5 w-full rounded-full" style={{ backgroundColor: "var(--pirs-border)" }}>
-                          <div className={`h-1.5 rounded-full transition-all duration-700 ${cfg.bar} ${cfg.width}`}></div>
+                        <div className="h-1.5 w-full rounded-full bg-stone-100 dark:bg-stone-800 overflow-hidden">
+                          <div className={`h-full rounded-full ${cfg.bar} ${cfg.width}`}></div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Photo thumbnail */}
+                    {/* Photo Area (if exists) */}
                     {report.photo_url && (
-                      <a href={report.photo_url} target="_blank" rel="noreferrer" className="shrink-0">
-                        <img src={report.photo_url} alt="Report evidence"
-                          className="h-20 w-20 rounded-xl object-cover border transition-transform hover:scale-105"
-                          style={{ borderColor: "var(--pirs-border)" }} />
-                      </a>
+                      <div className="w-full sm:w-32 shrink-0">
+                        <a href={report.photo_url} target="_blank" rel="noreferrer" className="block w-full">
+                          <img src={report.photo_url} alt="Evidence" className="h-24 w-full sm:w-32 rounded-lg object-cover border border-stone-200 dark:border-stone-700" />
+                        </a>
+                      </div>
                     )}
                   </div>
                 </div>

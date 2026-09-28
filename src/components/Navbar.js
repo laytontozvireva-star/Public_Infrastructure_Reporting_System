@@ -5,8 +5,8 @@ import { Sun, Moon, Menu, X, LogIn, LogOut } from "lucide-react";
 
 /**
  * Follows the same style guide as Home.jsx:
- * - Dark Slate Blue (#1E293B) for the header â€” establishes hierarchy.
- * - Alert Orange (#F97316) reserved for the one primary action link
+ * - Dark Slate Blue (#241F1C) for the header â€” establishes hierarchy.
+ * - Alert Orange (#FF6C16) reserved for the one primary action link
  *   ("Report Issue"), matching its role on the home page CTA buttons.
  * Everything else (dark-mode toggle, hamburger, login) stays neutral
  * white/slate so orange keeps meaning "primary action" and doesn't get
@@ -50,28 +50,28 @@ function Navbar() {
     [
       "rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
       isActive
-        ? "bg-white/10 text-white"
-        : "text-slate-300 hover:bg-white/5 hover:text-white",
+        ? "bg-white/10 text-[#F7F5F1]"
+        : "text-stone-300 hover:bg-white/5 hover:text-[#F7F5F1]",
     ].join(" ");
 
   const accentLinkClass = ({ isActive }) =>
     [
       "rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-200",
       isActive
-        ? "bg-[#F97316] text-white shadow-lg shadow-orange-500/25"
-        : "text-[#F97316] hover:bg-orange-500/10",
+        ? "bg-[#FF6C16] text-[#F7F5F1] shadow-lg shadow-orange-500/25"
+        : "text-[#FF6C16] hover:bg-orange-500/10",
     ].join(" ");
 
   return (
     <nav
-      className={`sticky top-0 z-50 bg-[#1E293B] transition-all duration-300 ${scrolled ? "shadow-xl" : ""}`}
+      className={`sticky top-0 z-50 bg-[#241F1C] transition-all duration-300 ${scrolled ? "shadow-xl" : ""}`}
       style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
       aria-label="Main navigation"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3.5">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 text-white transition hover:opacity-90">
+        <Link to="/" className="flex items-center gap-2 text-[#F7F5F1] transition hover:opacity-90">
           <img src="/pirs-icon.svg" alt="" className="h-8 w-8" aria-hidden="true" />
           <span className="text-lg font-black tracking-wide">PIRS</span>
         </Link>
@@ -92,7 +92,7 @@ function Navbar() {
           <button
             type="button"
             onClick={() => setDarkMode((p) => !p)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-300 transition hover:bg-white/5 hover:text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-stone-300 transition hover:bg-white/5 hover:text-[#F7F5F1]"
             aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
           >
             {darkMode ? (
@@ -115,7 +115,7 @@ function Navbar() {
           ) : (
             <Link
               to="/login"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-[#F7F5F1] transition hover:bg-white/15"
             >
               <LogIn size={16} strokeWidth={2.25} aria-hidden="true" />
               Login
@@ -126,7 +126,7 @@ function Navbar() {
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-300 transition hover:bg-white/5 hover:text-white md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-stone-300 transition hover:bg-white/5 hover:text-[#F7F5F1] md:hidden"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
           >
             {menuOpen ? (

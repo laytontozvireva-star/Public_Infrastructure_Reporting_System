@@ -1,6 +1,6 @@
-
 import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { Search, Droplets, Zap, Route, TrafficCone, HelpCircle, Loader2, BookOpen, AlertCircle, ExternalLink, Send } from "lucide-react";
 
 function Knowledge() {
   const [knowledge, setKnowledge] = useState([]);
@@ -16,11 +16,7 @@ function Knowledge() {
     async function loadKnowledge() {
       try {
         const response = await fetch("/api/knowledge");
-
-        if (!response.ok) {
-          throw new Error("Failed to load infrastructure knowledge.");
-        }
-
+        if (!response.ok) throw new Error("Failed to load infrastructure knowledge.");
         const data = await response.json();
         setKnowledge(data);
       } catch (err) {
@@ -30,13 +26,11 @@ function Knowledge() {
         setLoadingKnowledge(false);
       }
     }
-
     loadKnowledge();
   }, []);
 
   async function askPIRS(event) {
     event.preventDefault();
-
     if (!question.trim()) {
       setAskError("Please enter an infrastructure question.");
       return;
@@ -49,28 +43,15 @@ function Knowledge() {
     try {
       const response = await fetch("/api/ask", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          question: question.trim(),
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: question.trim() }),
       });
-
       const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.error || "Unable to get an answer from PIRS."
-        );
-      }
-
+      if (!response.ok || !data.success) throw new Error(data.error || "Unable to get an answer from PIRS.");
       setAnswer(data.answer);
     } catch (err) {
       console.error(err);
-      setAskError(
-        "Unable to connect to the PIRS knowledge assistant."
-      );
+      setAskError("Unable to connect to the PIRS knowledge assistant.");
     } finally {
       setAsking(false);
     }
@@ -82,382 +63,201 @@ function Knowledge() {
     setAskError("");
   }
 
+  const examples = [
+    { text: "Water problem", query: "There is a water supply problem in Harare. Who is responsible and how can I report it?", icon: Droplets },
+    { text: "Electricity fault", query: "There is an electricity fault in Harare. Who should I contact and what safety precautions should I take?", icon: Zap },
+    { text: "Pothole", query: "There is a pothole on a road in Harare. Who is responsible and how can I report it?", icon: Route },
+    { text: "Traffic light", query: "There is a damaged traffic light in Harare. Who is responsible and what should I do?", icon: TrafficCone }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-10">
-      <div className="mx-auto max-w-6xl">
+    <div className="page-wrapper min-h-screen bg-[#F8FAFC] dark:bg-[#181513] py-10 transition-colors duration-200">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6">
 
         {/* PAGE HEADER */}
-        <div className="mb-10 text-center">
-          <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-600">
-            PIRS Knowledge Base
-          </p>
-
-          <h1 className="text-3xl font-bold text-gray-900 md:text-5xl">
-            Infrastructure Knowledge Assistant
+        <div className="mb-10 border-b border-stone-200 dark:border-stone-800 pb-8">
+          <h1 className="text-3xl font-bold text-stone-900 dark:text-[#F7F5F1] mb-3">
+            Infrastructure Knowledge Base
           </h1>
-
-          <p className="mx-auto mt-4 max-w-3xl text-gray-600">
-            Ask questions about infrastructure problems in Zimbabwe and get
-            practical information about responsible authorities, reporting
-            procedures, and safety guidance.
+          <p className="text-base text-stone-600 dark:text-stone-400 max-w-3xl">
+            Find official information regarding responsible authorities, reporting procedures, and safety guidance for public infrastructure in Zimbabwe.
           </p>
         </div>
 
-        {/* AI ASSISTANT */}
-        <section className="mb-12 rounded-2xl border border-blue-100 bg-white p-6 shadow-sm md:p-8">
-
-          <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-2xl">
-              🤖
-            </div>
-
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">
-                Ask PIRS
-              </h2>
-
-              <p className="text-sm text-gray-500">
-                Powered by the PIRS knowledge base
-              </p>
-            </div>
+        {/* ASSISTANT CARD */}
+        <section className="mb-12 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#241F1C] shadow-sm">
+          <div className="border-b border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50 px-6 py-4 flex items-center gap-3">
+            <Search className="text-stone-500 dark:text-stone-400" size={20} />
+            <h2 className="text-lg font-semibold text-stone-900 dark:text-[#F7F5F1]">
+              Search Knowledge Base
+            </h2>
           </div>
 
-          <form onSubmit={askPIRS}>
-            <label
-              htmlFor="pirs-question"
-              className="mb-2 block text-sm font-semibold text-gray-700"
-            >
-              What infrastructure problem are you experiencing?
-            </label>
-
-            <textarea
-              id="pirs-question"
-              value={question}
-              onChange={(event) => setQuestion(event.target.value)}
-              placeholder="Example: There is a pothole on a road in Harare. Who is responsible and how can I report it?"
-              rows="4"
-              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="submit"
-                disabled={asking}
-                className="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {asking ? "Thinking..." : "Ask PIRS"}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setQuestion("");
-                  setAnswer("");
-                  setAskError("");
-                }}
-                className="rounded-xl border border-gray-300 px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
-              >
-                Clear
-              </button>
-            </div>
-          </form>
-
-          {/* EXAMPLE QUESTIONS */}
-          <div className="mt-6">
-            <p className="mb-3 text-sm font-semibold text-gray-700">
-              Try an example:
-            </p>
-
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() =>
-                  handleExample(
-                    "There is a water supply problem in Harare. Who is responsible and how can I report it?"
-                  )
-                }
-                className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-700 transition hover:border-blue-300 hover:bg-blue-50"
-              >
-                💧 Water problem
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  handleExample(
-                    "There is an electricity fault in Harare. Who should I contact and what safety precautions should I take?"
-                  )
-                }
-                className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-700 transition hover:border-blue-300 hover:bg-blue-50"
-              >
-                ⚡ Electricity fault
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  handleExample(
-                    "There is a pothole on a road in Harare. Who is responsible and how can I report it?"
-                  )
-                }
-                className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-700 transition hover:border-blue-300 hover:bg-blue-50"
-              >
-                🛣️ Pothole
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  handleExample(
-                    "There is a damaged traffic light in Harare. Who is responsible and what should I do?"
-                  )
-                }
-                className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-700 transition hover:border-blue-300 hover:bg-blue-50"
-              >
-                🚦 Traffic light
-              </button>
-            </div>
-          </div>
-
-          {/* ERROR */}
-          {askError && (
-            <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4">
-              <p className="font-medium text-red-700">
-                {askError}
-              </p>
-            </div>
-          )}
-
-          {/* ANSWER */}
-          {answer && (
-            <div className="mt-8 overflow-hidden rounded-2xl border border-green-200 bg-green-50">
-
-              <div className="border-b border-green-200 bg-white px-5 py-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">🤖</span>
-
-                  <h3 className="font-bold text-gray-900">
-                    PIRS Answer
-                  </h3>
-                </div>
-
-                <p className="mt-1 text-xs text-gray-500">
-                  Generated using information retrieved from the PIRS
-                  infrastructure knowledge base.
-                </p>
-              </div>
-
-              <div className="px-5 py-6">
-                <ReactMarkdown
-                  components={{
-                    h1: ({ children }) => (
-                      <h1 className="mb-4 text-2xl font-bold text-gray-900">
-                        {children}
-                      </h1>
-                    ),
-
-                    h2: ({ children }) => (
-                      <h2 className="mb-3 mt-6 text-xl font-bold text-gray-900">
-                        {children}
-                      </h2>
-                    ),
-
-                    h3: ({ children }) => (
-                      <h3 className="mb-2 mt-5 text-lg font-bold text-gray-900">
-                        {children}
-                      </h3>
-                    ),
-
-                    p: ({ children }) => (
-                      <p className="mb-4 text-sm leading-7 text-gray-700">
-                        {children}
-                      </p>
-                    ),
-
-                    strong: ({ children }) => (
-                      <strong className="font-bold text-gray-900">
-                        {children}
-                      </strong>
-                    ),
-
-                    ul: ({ children }) => (
-                      <ul className="mb-4 list-disc space-y-2 pl-6 text-sm leading-7 text-gray-700">
-                        {children}
-                      </ul>
-                    ),
-
-                    ol: ({ children }) => (
-                      <ol className="mb-4 list-decimal space-y-2 pl-6 text-sm leading-7 text-gray-700">
-                        {children}
-                      </ol>
-                    ),
-
-                    li: ({ children }) => (
-                      <li>{children}</li>
-                    ),
-
-                    blockquote: ({ children }) => (
-                      <blockquote className="my-4 border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-700">
-                        {children}
-                      </blockquote>
-                    ),
-
-                    code: ({ children }) => (
-                      <code className="rounded bg-gray-100 px-1.5 py-0.5 text-sm text-gray-800">
-                        {children}
-                      </code>
-                    ),
-
-                    hr: () => (
-                      <hr className="my-6 border-gray-200" />
-                    ),
-                  }}
+          <div className="p-6 sm:p-8">
+            <form onSubmit={askPIRS}>
+              <label htmlFor="pirs-question" className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
+                Describe the infrastructure issue you need help with:
+              </label>
+              
+              <textarea
+                id="pirs-question"
+                value={question}
+                onChange={(event) => setQuestion(event.target.value)}
+                placeholder="e.g., There is a severe pothole on Samora Machel Avenue. Who is responsible?"
+                rows="3"
+                className="w-full rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-[#181513] px-4 py-3 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 outline-none transition-colors focus:border-[#FF6C16] focus:ring-1 focus:ring-[#FF6C16] resize-y mb-4"
+              />
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  type="submit"
+                  disabled={asking || !question.trim()}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#FF6C16] px-6 py-2.5 text-sm font-medium text-[#F7F5F1] transition-colors hover:bg-[#EA6A0C] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {answer}
-                </ReactMarkdown>
+                  {asking ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                  {asking ? "Sending..." : "Send"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setQuestion(""); setAnswer(""); setAskError(""); }}
+                  className="inline-flex items-center justify-center rounded-lg border border-stone-300 dark:border-stone-600 px-6 py-2.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors hover:bg-stone-50 dark:hover:bg-stone-800"
+                >
+                  Clear
+                </button>
               </div>
-            </div>
-          )}
 
+              {/* QUICK SUGGESTIONS */}
+              <div className="mt-8 pt-6 border-t border-stone-100 dark:border-stone-800">
+                <p className="mb-3 text-sm font-medium text-stone-600 dark:text-stone-400">Common inquiries:</p>
+                <div className="flex flex-wrap gap-2">
+                  {examples.map((ex) => (
+                    <button
+                      key={ex.text}
+                      type="button"
+                      onClick={() => handleExample(ex.query)}
+                      className="inline-flex items-center gap-2 rounded-md border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/80 px-3 py-1.5 text-sm text-stone-700 dark:text-stone-300 transition-colors hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-100 dark:hover:bg-stone-700"
+                    >
+                      <ex.icon size={14} className="text-stone-500" /> {ex.text}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </form>
+
+            {/* ERROR */}
+            {askError && (
+              <div className="mt-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400">
+                <AlertCircle size={18} className="shrink-0 mt-0.5" />
+                <span>{askError}</span>
+              </div>
+            )}
+
+            {/* ANSWER */}
+            {answer && (
+              <div className="mt-8 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50">
+                <div className="border-b border-stone-200 dark:border-stone-700 px-5 py-3 flex items-center gap-2">
+                  <HelpCircle size={16} className="text-[#FF6C16] dark:text-[#FF6C16]" />
+                  <h3 className="font-medium text-stone-900 dark:text-[#F7F5F1] text-sm">Response</h3>
+                </div>
+                <div className="px-5 py-4 prose prose-slate dark:prose-invert max-w-none text-sm text-stone-700 dark:text-stone-300 prose-headings:text-stone-900 dark:prose-headings:text-[#F7F5F1] prose-a:text-[#FF6C16] dark:prose-a:text-[#FF6C16]">
+                  <ReactMarkdown>{answer}</ReactMarkdown>
+                </div>
+              </div>
+            )}
+          </div>
         </section>
 
-        {/* KNOWLEDGE BASE */}
+        {/* DIRECTORY SECTION */}
         <section>
-          <div className="mb-8">
-            <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-600">
-              Knowledge Library
-            </p>
-
-            <h2 className="text-2xl font-bold text-gray-900 md:text-3xl">
-              Infrastructure Information
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-stone-900 dark:text-[#F7F5F1]">
+              Information Directory
             </h2>
-
-            <p className="mt-2 max-w-3xl text-gray-600">
-              Browse information collected for infrastructure services,
-              safety guidance, reporting procedures, and responsible
-              authorities in Zimbabwe.
-            </p>
           </div>
 
           {loadingKnowledge && (
-            <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
-              <p className="text-gray-600">
-                Loading infrastructure knowledge...
-              </p>
+            <div className="flex items-center gap-3 py-8 text-stone-500 dark:text-stone-400">
+              <Loader2 size={20} className="animate-spin" />
+              <span className="text-sm font-medium">Loading directory...</span>
             </div>
           )}
 
           {knowledgeError && (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-6">
-              <p className="font-medium text-red-700">
-                {knowledgeError}
-              </p>
+            <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400">
+              {knowledgeError}
             </div>
           )}
 
-          {!loadingKnowledge &&
-            !knowledgeError &&
-            knowledge.length === 0 && (
-              <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
-                <p className="text-gray-600">
-                  No infrastructure knowledge is currently available.
-                </p>
-              </div>
-            )}
+          {!loadingKnowledge && !knowledgeError && knowledge.length === 0 && (
+            <div className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#241F1C] p-8 text-center text-sm text-stone-500 dark:text-stone-400">
+              No information articles are currently available.
+            </div>
+          )}
 
-          {!loadingKnowledge &&
-            !knowledgeError &&
-            knowledge.length > 0 && (
-              <div className="grid gap-6 md:grid-cols-2">
-                {knowledge.map((item) => (
-                  <div
-                    key={item._id}
-                    className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
-                  >
-                    <div className="mb-4 flex items-start justify-between gap-4">
-                      <h3 className="text-xl font-bold text-gray-900">
-                        {item.title || item.category}
-                      </h3>
-
-                      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
-                        {item.category}
-                      </span>
-                    </div>
-
-                    {item.problem && (
-                      <div className="mb-5">
-                        <h4 className="mb-1 font-semibold text-gray-800">
-                          Problem
-                        </h4>
-
-                        <p className="text-gray-600">
-                          {item.problem}
-                        </p>
-                      </div>
-                    )}
-
-                    {item.responsibleAuthority && (
-                      <div className="mb-5">
-                        <h4 className="mb-1 font-semibold text-gray-800">
-                          Responsible Authority
-                        </h4>
-
-                        <p className="text-gray-600">
-                          {item.responsibleAuthority}
-                        </p>
-                      </div>
-                    )}
-
-                    {item.locationContext && (
-                      <div className="mb-5">
-                        <h4 className="mb-1 font-semibold text-gray-800">
-                          Location
-                        </h4>
-
-                        <p className="text-gray-600">
-                          {item.locationContext}
-                        </p>
-                      </div>
-                    )}
-
-                    {item.requiredInformation?.length > 0 && (
-                      <div className="mb-5">
-                        <h4 className="mb-2 font-semibold text-gray-800">
-                          Information to Provide
-                        </h4>
-
-                        <ul className="list-disc space-y-1 pl-5 text-gray-600">
-                          {item.requiredInformation.map(
-                            (info, index) => (
-                              <li key={index}>{info}</li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    )}
-
-                    {item.sourceName && (
-                      <div className="mt-6 border-t border-gray-100 pt-4">
-                        <p className="text-xs text-gray-500">
-                          Source: {item.sourceName}
-                        </p>
-
-                        {item.source && (
-                          <a
-                            href={item.source}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-1 inline-block text-sm font-medium text-blue-600 hover:underline"
-                          >
-                            View official source →
-                          </a>
-                        )}
-                      </div>
-                    )}
+          {!loadingKnowledge && !knowledgeError && knowledge.length > 0 && (
+            <div className="space-y-4">
+              {knowledge.map((item) => (
+                <div key={item._id} className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#241F1C] p-6">
+                  
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="text-lg font-semibold text-stone-900 dark:text-[#F7F5F1]">
+                      {item.title || item.category}
+                    </h3>
+                    <span className="rounded bg-stone-100 dark:bg-stone-800 px-2.5 py-1 text-xs font-medium text-stone-600 dark:text-stone-300">
+                      {item.category}
+                    </span>
                   </div>
-                ))}
-              </div>
-            )}
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <div className="space-y-4">
+                      {item.problem && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase text-stone-500 dark:text-stone-400 mb-1">Problem Overview</h4>
+                          <p className="text-sm text-stone-700 dark:text-stone-300">{item.problem}</p>
+                        </div>
+                      )}
+                      {item.locationContext && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase text-stone-500 dark:text-stone-400 mb-1">Context / Regions</h4>
+                          <p className="text-sm text-stone-700 dark:text-stone-300">{item.locationContext}</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-4">
+                      {item.responsibleAuthority && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase text-stone-500 dark:text-stone-400 mb-1">Responsible Authority</h4>
+                          <p className="text-sm font-medium text-stone-900 dark:text-[#F7F5F1]">{item.responsibleAuthority}</p>
+                        </div>
+                      )}
+                      {item.requiredInformation?.length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase text-stone-500 dark:text-stone-400 mb-1">Required Details</h4>
+                          <ul className="list-disc pl-4 text-sm text-stone-700 dark:text-stone-300 space-y-1">
+                            {item.requiredInformation.map((info, index) => (
+                              <li key={index}>{info}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {item.sourceName && (
+                    <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+                      <p className="text-xs text-stone-500 dark:text-stone-400">Source: {item.sourceName}</p>
+                      {item.source && (
+                        <a href={item.source} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-medium text-[#FF6C16] dark:text-[#FF6C16] hover:underline">
+                          Official Source <ExternalLink size={12} />
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>

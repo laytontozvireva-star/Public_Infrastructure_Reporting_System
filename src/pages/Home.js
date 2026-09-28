@@ -1,16 +1,9 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
-  AlertTriangle,
   ArrowRight,
-  FileText,
   MapPin,
-  BarChart3,
-  Camera,
-  ClipboardList,
-  CheckCircle2,
-  Building2,
-  Clock,
+  Check,
   Zap,
   Droplets,
   Waves,
@@ -19,217 +12,375 @@ import {
   Trash2,
   TreePine,
   Construction,
+  FileText,
+  Navigation,
+  Search,
+  CircleAlert,
+  Lightbulb,
+  Sparkles,
+  Bot,
+  MessageCircleQuestion,
+  Send,
 } from "lucide-react";
 
-/**
- * COLOR SYSTEM — per style guide
- * -------------------------------
- * - Navigation & Structure → Dark Slate Blue #1E293B (hero/header hierarchy)
- * - Map & Data Workspace   → Cool Gray #F8FAFC canvas, White #FFFFFF cards
- * - Interactive Elements   → Alert Orange #F97316 (primary actions, active markers)
- * - State Indicators       → Fresh Green #10B981 (resolved), Amber #F59E0B (in progress)
- *
- * Orange is reserved strictly for things the user can click that move a
- * report forward. Green/amber only ever label a status. Slate is structure,
- * never used for actions, so the three colors stay legible as three
- * different kinds of information rather than one interchangeable palette.
- */
-
-const features = [
-  {
-    title: "Report Issues",
-    description: "Quickly report infrastructure problems such as potholes, faulty transformers, burst pipes, and illegal dumping.",
-    icon: FileText,
-  },
-  {
-    title: "GPS Location",
-    description: "Automatically capture the exact location of the problem to help maintenance teams respond faster.",
-    icon: MapPin,
-  },
-  {
-    title: "Track Progress",
-    description: "Monitor your report from submission to completion with real-time status updates.",
-    icon: BarChart3,
-  },
-  {
-    title: "Photo Evidence",
-    description: "Upload photos of the damaged infrastructure to provide clear evidence for authorities.",
-    icon: Camera,
-  },
-];
-
-// Icon color follows the state-indicator rule: green = resolved, amber = an
-// ongoing/ever-present status, slate = neutral count with no status to report.
-const stats = [
-  { value: "500+", label: "Reports Submitted", icon: ClipboardList, tone: "text-slate-300" },
-  { value: "350+", label: "Issues Resolved", icon: CheckCircle2, tone: "text-[#10B981]" },
-  { value: "25+", label: "Communities Served", icon: Building2, tone: "text-slate-300" },
-  { value: "24/7", label: "Availability", icon: Clock, tone: "text-[#F59E0B]" },
-];
-
 const categories = [
-  { label: "Electricity", icon: Zap },
-  { label: "Water", icon: Droplets },
-  { label: "Sewer", icon: Waves },
-  { label: "Roads", icon: Route },
-  { label: "Traffic Lights", icon: TrafficCone },
-  { label: "Illegal Dumping", icon: Trash2 },
-  { label: "Fallen Trees", icon: TreePine },
-  { label: "Other", icon: Construction },
+  { label: "Electricity", desc: "Power outages, damaged poles and exposed wiring.", icon: Zap },
+  { label: "Water", desc: "Leaks, burst pipes and interruptions to supply.", icon: Droplets },
+  { label: "Sewer", desc: "Blocked drains, overflows and sanitation concerns.", icon: Waves },
+  { label: "Roads", desc: "Potholes, damaged surfaces and unsafe roadways.", icon: Construction },
+  { label: "Traffic Lights", desc: "Broken signals and dangerous intersections.", icon: TrafficCone },
+  { label: "Illegal Dumping", desc: "Waste left in streets, parks or public spaces.", icon: Trash2 },
+  { label: "Fallen Trees", desc: "Trees or branches blocking roads and walkways.", icon: TreePine },
+  { label: "Other", desc: "Any other public infrastructure concern.", icon: MapPin },
 ];
 
 function Home() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800">
-
-      {/* ── Hero — Dark Slate Blue establishes top-level hierarchy ──── */}
-      <section className="relative overflow-hidden py-24 md:py-32" style={{ background: "linear-gradient(160deg, #1E293B 0%, #0F172A 100%)" }}>
-        <div className="relative mx-auto max-w-7xl px-6 text-center">
-          {/* Badge — green dot reads as "system status: active" */}
-          <div className="animate-fade-in mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm font-medium text-slate-200 backdrop-blur-sm">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-[#10B981]"></span>
-            Zimbabwe's Public Infrastructure Platform
-          </div>
-
-          <h1 className="animate-fade-in stagger-1 mb-6 text-5xl font-black leading-tight tracking-tight text-white md:text-7xl">
-            Public Infrastructure
-            <span className="mt-1 block text-[#F97316]">
-              Reporting System
-            </span>
-          </h1>
-
-          <p className="animate-fade-in stagger-2 mx-auto mb-10 max-w-3xl text-lg leading-relaxed text-slate-300 md:text-xl">
-            Help improve your community by reporting damaged public infrastructure directly
-            to the responsible authorities and tracking the repair progress in real time.
-          </p>
-
-          <div className="animate-fade-in stagger-3 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              to="/report"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#F97316] px-8 py-4 text-base font-bold text-white shadow-lg shadow-orange-500/25 transition hover:bg-[#EA6A0C]"
-            >
-              <AlertTriangle size={18} strokeWidth={2.25} aria-hidden="true" />
-              Report an Issue
-            </Link>
-            {!user && (
-              <Link
-                to="/register"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/25 bg-white/5 px-8 py-4 text-base font-semibold text-white transition hover:bg-white/10"
-              >
-                Get Started
-                <ArrowRight size={18} strokeWidth={2.25} aria-hidden="true" />
-              </Link>
-            )}
-          </div>
-
-          {/* Quick stats strip */}
-          <div className="animate-fade-in stagger-4 mt-16 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {stats.map((stat) => (
-              <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-5 text-center backdrop-blur-sm">
-                <stat.icon
-                  size={22}
-                  strokeWidth={2}
-                  className={`mx-auto mb-2 ${stat.tone}`}
-                  aria-hidden="true"
-                />
-                <div className="text-2xl font-black text-white">{stat.value}</div>
-                <div className="text-xs text-slate-400">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Features — white cards on the Cool Gray workspace canvas ── */}
-      <section className="py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-14 text-center animate-fade-in">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#1E293B]">Why Choose PIRS?</p>
-            <h2 className="mb-4 text-4xl font-bold text-slate-900">Built for Citizens, Designed for Action</h2>
-            <p className="mx-auto max-w-2xl text-lg text-slate-500">
-              Our platform makes it easy for citizens and authorities to work together in solving public infrastructure problems efficiently.
+    <div className="min-h-screen font-sans selection:bg-[#FF6C16]/30 bg-white dark:bg-[#181513] text-stone-900 dark:text-stone-100 transition-colors duration-300">
+      
+      {/* ── 1. HERO SECTION ────────────────────────────────────────────── */}
+      <section className="border-b border-stone-200 dark:border-stone-800/80">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16 lg:py-24 grid lg:grid-cols-[1.02fr_0.98fr] gap-14 items-center min-h-[calc(100vh-4.5rem)]">
+          
+          <div className="max-w-2xl">
+            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-stone-900 dark:text-stone-400 mb-6">
+              <span className="h-2 w-2 rounded-full bg-[#10B981]"></span>
+              Built for every community
             </p>
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-stone-900 dark:text-[#F7F5F1] leading-[1.05] mb-7">
+              Report infrastructure problems. <span className="text-[#FF6C16]">Improve your community.</span>
+            </h1>
+            <p className="text-lg text-stone-600 dark:text-stone-400 mb-9 max-w-xl leading-relaxed">
+              PIRS helps citizens report public infrastructure problems, share their location, and keep track of their reports.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                to="/report"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#FF6C16] px-6 text-base font-medium text-[#F7F5F1] shadow-sm hover:bg-[#EA6A0C] transition-colors"
+              >
+                Report an Issue
+                <ArrowRight size={18} />
+              </Link>
+              <Link
+                to="/knowledge"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-stone-300 dark:border-stone-700 bg-white dark:bg-[#241F1C] px-6 text-base font-medium text-stone-900 dark:text-[#F7F5F1] shadow-sm hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+              >
+                Explore Knowledge
+              </Link>
+            </div>
+
+            <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium text-stone-500 dark:text-stone-400">
+              <span className="flex items-center gap-2"><Check size={16} className="text-[#10B981]"/> Add a location</span>
+              <span className="flex items-center gap-2"><Check size={16} className="text-[#10B981]"/> Include photos</span>
+              <span className="flex items-center gap-2"><Check size={16} className="text-[#10B981]"/> Track progress</span>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {features.map((feature, i) => (
-              <div
-                key={feature.title}
-                className={`rounded-xl border border-slate-200/70 bg-white p-6 shadow-sm animate-fade-in stagger-${i + 1} group cursor-default transition hover:-translate-y-1 hover:shadow-md`}
-              >
-                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1E293B] shadow-sm transition-transform duration-300 group-hover:scale-110">
-                  <feature.icon size={26} strokeWidth={2} className="text-white" aria-hidden="true" />
+          <div className="relative pb-8 w-full max-w-xl mx-auto lg:mx-0">
+            {/* Structural lines representing layout framework */}
+            <div className="absolute left-[8%] top-[12%] h-[74%] w-px bg-stone-200 dark:bg-stone-800"></div>
+            <div className="absolute left-[8%] top-[12%] h-px w-[78%] bg-stone-200 dark:bg-stone-800"></div>
+            
+            {/* The mock UI card */}
+            <div className="relative ml-[6%] mr-[2%] mt-8 overflow-hidden rounded-lg border border-stone-200 dark:border-stone-700/80 bg-white dark:bg-[#241F1C] shadow-xl dark:shadow-2xl dark:shadow-black/50">
+              <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-700/80 px-5 py-4 bg-stone-50/50 dark:bg-[#181513]/50">
+                <div className="flex items-center gap-2 text-sm font-bold text-stone-900 dark:text-[#F7F5F1]">
+                  <span className="h-2 w-2 rounded-full bg-[#10B981]"></span> New infrastructure report
                 </div>
-                <h3 className="mb-3 text-lg font-bold text-slate-900">{feature.title}</h3>
-                <p className="text-sm leading-relaxed text-slate-500">{feature.description}</p>
+                <span className="text-xs font-semibold text-stone-500 dark:text-stone-400">Step 2 of 3</span>
               </div>
-            ))}
+              
+              <div className="grid min-h-[20rem] md:grid-cols-[0.9fr_1.1fr]">
+                <div className="border-b border-stone-100 dark:border-stone-700/80 p-5 md:border-b-0 md:border-r">
+                  <p className="text-xs font-bold uppercase tracking-widest text-[#FF6C16] mb-6">Issue details</p>
+                  
+                  <div className="flex items-center gap-3 rounded-md border border-[#FF6C16]/30 bg-orange-50 dark:bg-orange-900/10 p-3 mb-5">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[#FF6C16] text-[#F7F5F1]">
+                      <Construction size={20} />
+                    </span>
+                    <span>
+                      <strong className="block text-sm text-stone-900 dark:text-[#F7F5F1]">Roads</strong>
+                      <span className="text-xs text-stone-500 dark:text-stone-400">Pothole or road damage</span>
+                    </span>
+                  </div>
+
+                  <div className="space-y-3 mb-7">
+                    <div className="h-2 w-full rounded-full bg-stone-100 dark:bg-stone-700"></div>
+                    <div className="h-2 w-4/5 rounded-full bg-stone-100 dark:bg-stone-700"></div>
+                    <div className="h-2 w-3/5 rounded-full bg-stone-100 dark:bg-stone-700"></div>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs font-semibold text-[#10B981]">
+                    <Check size={16} /> Photo attached
+                  </div>
+                </div>
+
+                <div className="relative min-h-[16rem] overflow-hidden bg-stone-50 dark:bg-[#181513] p-4 flex items-end justify-center">
+                  {/* Mock Map Background Grid */}
+                  <div className="absolute inset-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+                  <div className="absolute left-[53%] top-[43%] -transtone-x-1/2 -transtone-y-1/2">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-white dark:border-[#241F1C] bg-[#10B981] text-[#F7F5F1] shadow-lg">
+                      <MapPin size={24} />
+                    </span>
+                  </div>
+
+                  <div className="relative w-full flex items-center gap-2 rounded-md border border-[#10B981]/25 bg-white dark:bg-[#241F1C] p-3 shadow-sm z-10">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-[#10B981]">
+                      <Check size={16} />
+                    </span>
+                    <span>
+                      <strong className="block text-xs text-stone-900 dark:text-[#F7F5F1]">Location confirmed</strong>
+                      <span className="text-[11px] text-stone-500 dark:text-stone-400">Ready to submit</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute -bottom-6 right-0 flex items-center gap-3 rounded-md border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#241F1C] px-4 py-3 shadow-lg z-20">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-orange-50 dark:bg-orange-900/20 text-[#FF6C16]">
+                <Send size={16} className="-ml-0.5" />
+              </span>
+              <span className="text-xs">
+                <strong className="block text-stone-900 dark:text-[#F7F5F1]">Clear information</strong>
+                <span className="text-stone-500 dark:text-stone-400">helps describe the issue</span>
+              </span>
+            </div>
           </div>
+
         </div>
       </section>
 
-      {/* ── Categories — white section, Cool Gray tiles ─────────────── */}
-      <section className="bg-white py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-14 text-center">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#1E293B]">What You Can Report</p>
-            <h2 className="mb-4 text-4xl font-bold text-slate-900">Reportable Categories</h2>
-            <p className="text-lg text-slate-500">Citizens can report various types of public infrastructure problems.</p>
+      {/* ── 2. QUICK CATEGORY SECTION ─────────────────────────────────── */}
+      <section className="py-24 lg:py-32 bg-stone-50/50 dark:bg-[#1D160E]/50 border-b border-stone-200 dark:border-stone-800/80">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="max-w-2xl mb-12">
+            <p className="text-xs font-bold uppercase tracking-widest text-[#FF6C16] mb-3">Start a report</p>
+            <h2 className="text-4xl font-bold tracking-tight text-stone-900 dark:text-[#F7F5F1] mb-4">What needs attention?</h2>
+            <p className="text-lg text-stone-600 dark:text-stone-400">Choose the type of infrastructure problem you want to report.</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-200 dark:bg-stone-800">
             {categories.map((cat) => (
               <Link
                 key={cat.label}
-                to="/report"
-                className="group flex flex-col items-center gap-3 rounded-lg bg-[#F8FAFC] p-6 text-center text-slate-600 transition-all duration-200 hover:-translate-y-1 hover:bg-orange-50 hover:text-[#F97316]"
+                to={`/report?category=${encodeURIComponent(cat.label)}`}
+                className="group relative flex flex-col min-h-[14rem] bg-white dark:bg-[#241F1C] p-6 transition-colors hover:bg-orange-50/50 dark:hover:bg-stone-800 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6C16]"
               >
-                <cat.icon
-                  size={30}
-                  strokeWidth={1.75}
-                  className="transition-transform duration-300 group-hover:scale-110"
-                  aria-hidden="true"
-                />
-                <span className="text-sm font-semibold">{cat.label}</span>
+                <span className="flex h-11 w-11 items-center justify-center rounded-md border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#181513] text-[#FF6C16] transition-transform group-hover:-transtone-y-1 shadow-sm">
+                  <cat.icon size={20} />
+                </span>
+                <h3 className="mt-8 text-xl font-bold text-stone-900 dark:text-[#F7F5F1]">{cat.label}</h3>
+                <p className="mt-2 text-sm leading-6 text-stone-500 dark:text-stone-400">{cat.desc}</p>
+                <span className="mt-6 flex items-center gap-2 text-sm font-bold text-[#FF6C16] opacity-0 transition-opacity group-hover:opacity-100">
+                  Report this issue <ArrowRight size={16} />
+                </span>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Call to Action ───────────────────────────────────────────── */}
-      <section className="py-24">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <div className="rounded-2xl border border-slate-200/70 bg-white p-12 shadow-sm">
-            <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F8FAFC]">
-              <Building2 size={30} strokeWidth={2} className="text-[#1E293B]" aria-hidden="true" />
+      {/* ── 3. HOW PIRS WORKS ─────────────────────────────────────────── */}
+      <section className="py-24 lg:py-32 bg-[#181513] text-[#F7F5F1]">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-center mb-24">
+            <div className="lg:pr-16">
+              <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#FF6C16] mb-3">A clear process</p>
+              <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight">How PIRS works</h2>
             </div>
-            <h2 className="mb-4 text-4xl font-bold text-slate-900">Ready to Make a Difference?</h2>
-            <p className="mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-slate-500">
-              Join thousands of citizens helping to improve public infrastructure across Zimbabwe by reporting issues quickly and efficiently.
+            <p className="max-w-sm text-[15px] text-stone-400 leading-relaxed lg:justify-self-end pt-4 lg:pt-0">
+              Three straightforward steps help turn what you see into a clear, trackable report.
             </p>
-            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link
-                to="/report"
-                className="inline-flex items-center gap-2 rounded-lg bg-[#F97316] px-8 py-4 text-base font-bold text-white shadow-lg shadow-orange-500/25 transition hover:bg-[#EA6A0C]"
-              >
-                <AlertTriangle size={18} strokeWidth={2.25} aria-hidden="true" />
-                Report an Issue
-              </Link>
-              {!user && (
-                <Link
-                  to="/register"
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-8 py-4 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
-                >
-                  Create Free Account
-                </Link>
-              )}
+          </div>
+
+          <div className="relative">
+            {/* The continuous line */}
+            <div className="absolute left-0 right-0 top-10 hidden h-px bg-stone-800/80 md:block"></div>
+            
+            <div className="grid gap-x-16 gap-y-12 md:grid-cols-3">
+              <article className="relative">
+                <span className="relative z-10 flex h-20 w-20 items-center justify-center rounded-full border border-stone-700/60 bg-[#181513] text-[#FF6C16]">
+                  <FileText size={24} strokeWidth={1.5} />
+                </span>
+                <p className="mt-8 text-xs font-bold text-[#FF6C16]">01</p>
+                <h3 className="mt-2 text-[22px] font-bold text-[#F7F5F1]">Report</h3>
+                <p className="mt-3 text-sm leading-relaxed text-stone-400 max-w-[90%]">Describe the infrastructure problem and provide useful information.</p>
+              </article>
+              
+              <article className="relative">
+                <span className="relative z-10 flex h-20 w-20 items-center justify-center rounded-full border border-stone-700/60 bg-[#181513] text-[#FF6C16]">
+                  <Navigation size={24} strokeWidth={1.5} />
+                </span>
+                <p className="mt-8 text-xs font-bold text-[#FF6C16]">02</p>
+                <h3 className="mt-2 text-[22px] font-bold text-[#F7F5F1]">Locate</h3>
+                <p className="mt-3 text-sm leading-relaxed text-stone-400 max-w-[90%]">Share the location so the problem can be understood and acted upon.</p>
+              </article>
+              
+              <article className="relative">
+                <span className="relative z-10 flex h-20 w-20 items-center justify-center rounded-full border border-stone-700/60 bg-[#181513] text-[#FF6C16]">
+                  <Search size={24} strokeWidth={1.5} />
+                </span>
+                <p className="mt-8 text-xs font-bold text-[#FF6C16]">03</p>
+                <h3 className="mt-2 text-[22px] font-bold text-[#F7F5F1]">Track</h3>
+                <p className="mt-3 text-sm leading-relaxed text-stone-400 max-w-[90%]">Return to PIRS to monitor submitted reports.</p>
+              </article>
             </div>
           </div>
         </div>
       </section>
+
+      {/* ── 4. WHY PIRS / COMMUNITY IMPACT ────────────────────────────── */}
+      <section className="py-24 lg:py-32 bg-white dark:bg-[#181513] border-b border-stone-200 dark:border-stone-800/80">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-2 lg:items-end mb-16">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-[#FF6C16] mb-3">Community impact</p>
+              <h2 className="text-4xl font-extrabold tracking-tight text-stone-900 dark:text-[#F7F5F1] max-w-xl leading-tight">
+                Small reports can make a visible difference.
+              </h2>
+            </div>
+            <p className="max-w-lg text-lg text-stone-600 dark:text-stone-400 lg:justify-self-end">
+              Good public information starts with people documenting what they see—clearly, locally and responsibly.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            <article className="rounded-xl border border-stone-200 dark:border-stone-700/80 bg-white dark:bg-[#241F1C] p-8 shadow-sm">
+              <div className="flex items-start justify-between mb-10">
+                <span className="flex h-12 w-12 items-center justify-center rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-[#10B981]">
+                  <CircleAlert size={20} />
+                </span>
+                <span className="font-mono text-xs font-bold text-stone-400 dark:text-stone-500">01</span>
+              </div>
+              <h3 className="text-xl font-bold text-stone-900 dark:text-[#F7F5F1] mb-3">Make Problems Visible</h3>
+              <p className="text-sm leading-6 text-stone-600 dark:text-stone-400">Give citizens a way to document infrastructure problems.</p>
+            </article>
+            
+            <article className="rounded-xl border border-stone-200 dark:border-stone-700/80 bg-white dark:bg-[#241F1C] p-8 shadow-sm">
+              <div className="flex items-start justify-between mb-10">
+                <span className="flex h-12 w-12 items-center justify-center rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-[#10B981]">
+                  <Lightbulb size={20} />
+                </span>
+                <span className="font-mono text-xs font-bold text-stone-400 dark:text-stone-500">02</span>
+              </div>
+              <h3 className="text-xl font-bold text-stone-900 dark:text-[#F7F5F1] mb-3">Provide Better Information</h3>
+              <p className="text-sm leading-6 text-stone-600 dark:text-stone-400">Reports can include descriptions, locations and photos.</p>
+            </article>
+            
+            <article className="rounded-xl border border-stone-200 dark:border-stone-700/80 bg-white dark:bg-[#241F1C] p-8 shadow-sm">
+              <div className="flex items-start justify-between mb-10">
+                <span className="flex h-12 w-12 items-center justify-center rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-[#10B981]">
+                  <Check size={20} />
+                </span>
+                <span className="font-mono text-xs font-bold text-stone-400 dark:text-stone-500">03</span>
+              </div>
+              <h3 className="text-xl font-bold text-stone-900 dark:text-[#F7F5F1] mb-3">Track Your Reports</h3>
+              <p className="text-sm leading-6 text-stone-600 dark:text-stone-400">Citizens can monitor their submitted reports.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. KNOWLEDGE + AI ─────────────────────────────────────────── */}
+      <section className="py-24 lg:py-32 bg-stone-50/50 dark:bg-[#1D160E] border-b border-stone-200 dark:border-stone-800/80">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          
+          <div className="max-w-lg">
+            <p className="text-xs font-bold uppercase tracking-widest text-[#FF6C16] mb-3">Knowledge + AI</p>
+            <h2 className="text-4xl font-extrabold tracking-tight text-stone-900 dark:text-[#F7F5F1] mb-6">Not sure what to do?</h2>
+            <p className="text-lg text-stone-600 dark:text-stone-400 mb-8">
+              Explore infrastructure guidance or ask the PIRS AI Assistant for help understanding how to report a problem.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                to="/knowledge"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#FF6C16] px-8 text-sm font-medium text-[#F7F5F1] shadow-sm hover:bg-[#EA6A0C] transition-colors"
+              >
+                Explore Knowledge
+                <ArrowRight size={16} />
+              </Link>
+              <Link
+                to="/knowledge?assistant=open"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-stone-300 dark:border-stone-700 bg-white dark:bg-[#241F1C] px-8 text-sm font-medium text-stone-900 dark:text-[#F7F5F1] shadow-sm hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+              >
+                Ask the AI Assistant
+                <Sparkles size={16} />
+              </Link>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-lg border border-stone-200 dark:border-stone-700/80 bg-white dark:bg-[#241F1C] shadow-xl dark:shadow-2xl dark:shadow-black/50">
+            <div className="flex items-center gap-3 border-b border-stone-100 dark:border-stone-700/80 px-5 py-4 bg-stone-50/50 dark:bg-[#181513]/50">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[#FF6C16] text-[#F7F5F1]">
+                <Bot size={20} />
+              </span>
+              <span>
+                <strong className="block text-sm text-stone-900 dark:text-[#F7F5F1]">PIRS AI Assistant</strong>
+                <span className="flex items-center gap-1.5 text-xs text-[#10B981]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#10B981]"></span> Ready to help
+                </span>
+              </span>
+            </div>
+            
+            <div className="p-5 sm:p-7">
+              <div className="max-w-[86%] rounded-lg rounded-tl-none bg-stone-100 dark:bg-stone-800 p-4 text-sm leading-6 text-stone-900 dark:text-stone-100">
+                Hello. What would you like to know about reporting an infrastructure problem?
+              </div>
+              
+              <p className="mt-8 mb-3 text-xs font-bold uppercase tracking-widest text-stone-500">Try asking</p>
+              
+              <div className="space-y-2">
+                <Link to="/knowledge?assistant=open" className="group flex items-center justify-between gap-4 rounded-md border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#181513] px-4 py-3 text-sm font-medium transition-colors hover:border-[#FF6C16]/40 hover:bg-orange-50 dark:hover:bg-orange-900/10">
+                  <span className="flex min-w-0 items-center gap-3 text-stone-700 dark:text-stone-300">
+                    <MessageCircleQuestion size={16} className="shrink-0 text-[#FF6C16]" />
+                    How do I report a water problem?
+                  </span>
+                  <ArrowRight size={16} className="shrink-0 text-stone-400 transition-transform group-hover:transtone-x-1" />
+                </Link>
+                <Link to="/knowledge?assistant=open" className="group flex items-center justify-between gap-4 rounded-md border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#181513] px-4 py-3 text-sm font-medium transition-colors hover:border-[#FF6C16]/40 hover:bg-orange-50 dark:hover:bg-orange-900/10">
+                  <span className="flex min-w-0 items-center gap-3 text-stone-700 dark:text-stone-300">
+                    <MessageCircleQuestion size={16} className="shrink-0 text-[#FF6C16]" />
+                    Who handles electricity faults?
+                  </span>
+                  <ArrowRight size={16} className="shrink-0 text-stone-400 transition-transform group-hover:transtone-x-1" />
+                </Link>
+                <Link to="/knowledge?assistant=open" className="group flex items-center justify-between gap-4 rounded-md border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#181513] px-4 py-3 text-sm font-medium transition-colors hover:border-[#FF6C16]/40 hover:bg-orange-50 dark:hover:bg-orange-900/10">
+                  <span className="flex min-w-0 items-center gap-3 text-stone-700 dark:text-stone-300">
+                    <MessageCircleQuestion size={16} className="shrink-0 text-[#FF6C16]" />
+                    What information should I provide?
+                  </span>
+                  <ArrowRight size={16} className="shrink-0 text-stone-400 transition-transform group-hover:transtone-x-1" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6. FINAL CTA ──────────────────────────────────────────────── */}
+      <section className="bg-[#FF6C16] text-[#F7F5F1]">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16 lg:py-20 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-widest text-[#F7F5F1]/75 mb-4">Your report is a useful first step</p>
+            <h2 className="text-4xl font-extrabold sm:text-5xl tracking-tight mb-4">See an infrastructure problem?</h2>
+            <p className="max-w-2xl text-base leading-7 text-[#F7F5F1]/90">
+              Report it through PIRS and help make infrastructure problems easier to identify and track.
+            </p>
+          </div>
+          <Link
+            to="/report"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-stone-900 px-8 text-base font-medium text-[#F7F5F1] shadow-sm hover:bg-stone-800 transition-colors whitespace-nowrap"
+          >
+            Report an Issue
+            <ArrowRight size={18} />
+          </Link>
+        </div>
+      </section>
+
     </div>
   );
 }

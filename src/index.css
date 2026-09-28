@@ -16,7 +16,7 @@
   --pirs-surface:          #FFFFFF;
   --pirs-surface-2:        #F8FAFC;
   --pirs-border:           #E2E8F0;
-  --pirs-text:             #0F172A;
+  --pirs-text:             #181513;
   --pirs-muted:            #64748B;
 
   --pirs-nav-bg:           #1E3A8A;
@@ -38,14 +38,14 @@
 
 /* Dark mode tokens */
 .dark {
-  --pirs-bg:               #0F172A;
-  --pirs-surface:          #1E293B;
+  --pirs-bg:               #181513;
+  --pirs-surface:          #241F1C;
   --pirs-surface-2:        #162032;
   --pirs-border:           #334155;
   --pirs-text:             #F1F5F9;
   --pirs-muted:            #94A3B8;
 
-  --pirs-nav-bg:           #0F172A;
+  --pirs-nav-bg:           #181513;
   --pirs-nav-border:       rgba(255,255,255,0.08);
 }
 
@@ -77,7 +77,7 @@ body {
 
   /* Cards */
   .card {
-    @apply rounded-2xl bg-white shadow-md border border-slate-100 transition-all duration-300;
+    @apply rounded-2xl bg-white shadow-md border border-stone-100 transition-all duration-300;
     background-color: var(--pirs-surface);
     border-color: var(--pirs-border);
     box-shadow: var(--shadow-md);
@@ -86,7 +86,7 @@ body {
 
   /* Primary button */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-[#F7F5F1]
            transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
     background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
     box-shadow: 0 4px 14px rgba(37,99,235,0.35);
@@ -100,7 +100,7 @@ body {
 
   /* Warning/accent button */
   .btn-warning {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-[#F7F5F1]
            transition-all duration-200;
     background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
     box-shadow: 0 4px 14px rgba(245,158,11,0.35);
@@ -121,7 +121,7 @@ body {
 
   /* Danger button */
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-[#F7F5F1]
            transition-all duration-200;
     background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
     box-shadow: 0 4px 12px rgba(239,68,68,0.30);
