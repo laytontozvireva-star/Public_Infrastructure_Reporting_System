@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { Search, Droplets, Zap, Route, TrafficCone, HelpCircle, Loader2, BookOpen, AlertCircle, ExternalLink, Send } from "lucide-react";
+import { Search, Droplets, Zap, Route, TrafficCone, HelpCircle, Loader2, AlertCircle, ExternalLink, Send } from "lucide-react";
 
 function Knowledge() {
   const [knowledge, setKnowledge] = useState([]);
