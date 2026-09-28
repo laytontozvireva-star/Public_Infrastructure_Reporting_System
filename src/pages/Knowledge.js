@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -14,7 +15,7 @@ function Knowledge() {
   useEffect(() => {
     async function loadKnowledge() {
       try {
-       const response = await fetch("http://localhost:5000/api/knowledge");
+        const response = await fetch("/api/knowledge");
 
         if (!response.ok) {
           throw new Error("Failed to load infrastructure knowledge.");
@@ -46,7 +47,7 @@ function Knowledge() {
     setAnswer("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/ask", {
+      const response = await fetch("/api/ask", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +69,7 @@ function Knowledge() {
     } catch (err) {
       console.error(err);
       setAskError(
-        "Unable to connect to the PIRS knowledge assistant. Make sure the PIRS API server is running."
+        "Unable to connect to the PIRS knowledge assistant."
       );
     } finally {
       setAsking(false);
@@ -76,10 +77,10 @@ function Knowledge() {
   }
 
   function handleExample(example) {
-  setQuestion(example);
-  setAnswer("");
-  setAskError("");
-}
+    setQuestion(example);
+    setAnswer("");
+    setAskError("");
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">
@@ -228,102 +229,95 @@ function Knowledge() {
           )}
 
           {/* ANSWER */}
-          {/* ANSWER */}
-{answer && (
+          {answer && (
+            <div className="mt-8 overflow-hidden rounded-2xl border border-green-200 bg-green-50">
 
-  <div className="mt-8 overflow-hidden rounded-2xl border border-green-200 bg-green-50">
+              <div className="border-b border-green-200 bg-white px-5 py-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🤖</span>
 
+                  <h3 className="font-bold text-gray-900">
+                    PIRS Answer
+                  </h3>
+                </div>
 
-{/* ANSWER HEADER */}
-<div className="border-b border-green-200 bg-white px-5 py-4">
-  <div className="flex items-center gap-2">
-    <span className="text-xl">🤖</span>
+                <p className="mt-1 text-xs text-gray-500">
+                  Generated using information retrieved from the PIRS
+                  infrastructure knowledge base.
+                </p>
+              </div>
 
-    <h3 className="font-bold text-gray-900">
-      PIRS Answer
-    </h3>
-  </div>
+              <div className="px-5 py-6">
+                <ReactMarkdown
+                  components={{
+                    h1: ({ children }) => (
+                      <h1 className="mb-4 text-2xl font-bold text-gray-900">
+                        {children}
+                      </h1>
+                    ),
 
-  <p className="mt-1 text-xs text-gray-500">
-    Generated using information retrieved from the PIRS
-    infrastructure knowledge base.
-  </p>
-</div>
+                    h2: ({ children }) => (
+                      <h2 className="mb-3 mt-6 text-xl font-bold text-gray-900">
+                        {children}
+                      </h2>
+                    ),
 
-{/* MARKDOWN ANSWER */}
-<div className="px-5 py-6">
-  <ReactMarkdown
-    components={{
-      h1: ({ children }) => (
-        <h1 className="mb-4 text-2xl font-bold text-gray-900">
-          {children}
-        </h1>
-      ),
+                    h3: ({ children }) => (
+                      <h3 className="mb-2 mt-5 text-lg font-bold text-gray-900">
+                        {children}
+                      </h3>
+                    ),
 
-      h2: ({ children }) => (
-        <h2 className="mb-3 mt-6 text-xl font-bold text-gray-900">
-          {children}
-        </h2>
-      ),
+                    p: ({ children }) => (
+                      <p className="mb-4 text-sm leading-7 text-gray-700">
+                        {children}
+                      </p>
+                    ),
 
-      h3: ({ children }) => (
-        <h3 className="mb-2 mt-5 text-lg font-bold text-gray-900">
-          {children}
-        </h3>
-      ),
+                    strong: ({ children }) => (
+                      <strong className="font-bold text-gray-900">
+                        {children}
+                      </strong>
+                    ),
 
-      p: ({ children }) => (
-        <p className="mb-4 text-sm leading-7 text-gray-700">
-          {children}
-        </p>
-      ),
+                    ul: ({ children }) => (
+                      <ul className="mb-4 list-disc space-y-2 pl-6 text-sm leading-7 text-gray-700">
+                        {children}
+                      </ul>
+                    ),
 
-      strong: ({ children }) => (
-        <strong className="font-bold text-gray-900">
-          {children}
-        </strong>
-      ),
+                    ol: ({ children }) => (
+                      <ol className="mb-4 list-decimal space-y-2 pl-6 text-sm leading-7 text-gray-700">
+                        {children}
+                      </ol>
+                    ),
 
-      ul: ({ children }) => (
-        <ul className="mb-4 list-disc space-y-2 pl-6 text-sm leading-7 text-gray-700">
-          {children}
-        </ul>
-      ),
+                    li: ({ children }) => (
+                      <li>{children}</li>
+                    ),
 
-      ol: ({ children }) => (
-        <ol className="mb-4 list-decimal space-y-2 pl-6 text-sm leading-7 text-gray-700">
-          {children}
-        </ol>
-      ),
+                    blockquote: ({ children }) => (
+                      <blockquote className="my-4 border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-700">
+                        {children}
+                      </blockquote>
+                    ),
 
-      li: ({ children }) => (
-        <li>{children}</li>
-      ),
+                    code: ({ children }) => (
+                      <code className="rounded bg-gray-100 px-1.5 py-0.5 text-sm text-gray-800">
+                        {children}
+                      </code>
+                    ),
 
-      blockquote: ({ children }) => (
-        <blockquote className="my-4 border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-700">
-          {children}
-        </blockquote>
-      ),
-
-      code: ({ children }) => (
-        <code className="rounded bg-gray-100 px-1.5 py-0.5 text-sm text-gray-800">
-          {children}
-        </code>
-      ),
-
-      hr: () => (
-        <hr className="my-6 border-gray-200" />
-      ),
-    }}
-  >
-    {answer}
-  </ReactMarkdown>
-</div>
-
-
-  </div>
-)}
+                    hr: () => (
+                      <hr className="my-6 border-gray-200" />
+                    ),
+                  }}
+                >
+                  {answer}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
 
         </section>
 

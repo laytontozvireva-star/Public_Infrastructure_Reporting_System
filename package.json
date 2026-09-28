@@ -2,6 +2,7 @@
   "name": "test-app",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://public-infrastructure-reporting-sys.vercel.app",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@sanity/client": "^8.7.0",

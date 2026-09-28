@@ -1,18 +1,19 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { createClient } = require("@sanity/client");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID,
-  dataset: process.env.SANITY_DATASET || "production",
-  apiVersion: "2026-01-01",
-  useCdn: false,
-  token: process.env.SANITY_TOKEN || process.env.SANITY_API_TOKEN,
-});
-
 module.exports = async (req, res) => {
   try {
+    const { createClient } = await import("@sanity/client");
+
+    const sanityClient = createClient({
+      projectId: process.env.SANITY_PROJECT_ID,
+      dataset: process.env.SANITY_DATASET || "production",
+      apiVersion: "2026-01-01",
+      useCdn: false,
+      token: process.env.SANITY_TOKEN || process.env.SANITY_API_TOKEN,
+    });
+
     if (req.method !== "POST") {
       return res.status(405).json({
         success: false,
@@ -66,9 +67,9 @@ module.exports = async (req, res) => {
 Title: ${item.title || ""}
 Category: ${item.category || ""}
 Problem: ${item.problem || ""}
-Safety Guidance: ${item.safetyGuidance || ""}
-Reporting Procedure: ${item.reportingProcedure || ""}
-Required Information: ${item.requiredInformation || ""}
+Safety Guidance: ${JSON.stringify(item.safetyGuidance || [])}
+Reporting Procedure: ${JSON.stringify(item.reportingProcedure || [])}
+Required Information: ${JSON.stringify(item.requiredInformation || [])}
 Responsible Authority: ${item.responsibleAuthority || ""}
 Location Context: ${item.locationContext || ""}
 Summary: ${item.summary || ""}
@@ -106,6 +107,8 @@ ${knowledgeText}
 
     for (const modelName of models) {
       try {
+        console.log(`Trying Gemini model: ${modelName}`);
+
         const model = genAI.getGenerativeModel({
           model: modelName,
         });
@@ -115,11 +118,15 @@ ${knowledgeText}
         answer = result.response.text();
 
         if (answer) {
+          console.log(`Gemini model succeeded: ${modelName}`);
           break;
         }
       } catch (error) {
         lastError = error;
-        console.error(`Gemini model ${modelName} failed:`, error.message);
+        console.error(
+          `Gemini model ${modelName} failed:`,
+          error.message
+        );
       }
     }
 
