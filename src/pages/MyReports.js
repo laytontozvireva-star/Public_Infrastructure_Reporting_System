@@ -84,8 +84,12 @@ function MyReports() {
   const completed  = reports.filter(r => r.status === 'Completed').length;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#181513] py-10 transition-colors duration-200">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
+    <div className="min-h-screen relative overflow-hidden py-10 transition-colors duration-200">
+      <div className="absolute inset-0 z-0">
+        <img src="/images/repair-workers.jpg" alt="" className="h-full w-full object-cover object-center" />
+        <div className="absolute inset-0 bg-[#F8FAFC]/90 dark:bg-[#181513]/90 backdrop-blur-[8px]"></div>
+      </div>
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
 
         {/* Header Section */}
         <div className="mb-8 flex flex-col gap-4 border-b border-stone-200 dark:border-stone-800 pb-6 sm:flex-row sm:items-center sm:justify-between">

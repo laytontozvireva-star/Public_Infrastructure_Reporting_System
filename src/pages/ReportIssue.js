@@ -78,8 +78,12 @@ function ReportIssue() {
   };
 
   return (
-    <div className="page-wrapper">
-      <div className="mx-auto max-w-2xl animate-fade-in">
+    <div className="page-wrapper relative overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <img src="/images/report-document.jpg" alt="" className="h-full w-full object-cover object-center" />
+        <div className="absolute inset-0 bg-[#F8FAFC]/90 dark:bg-[#181513]/90 backdrop-blur-[8px]"></div>
+      </div>
+      <div className="relative z-10 mx-auto max-w-2xl animate-fade-in">
 
         {/* Page header */}
         <div className="mb-8 text-center">

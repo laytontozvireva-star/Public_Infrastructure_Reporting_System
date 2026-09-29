@@ -125,9 +125,24 @@ function Knowledge() {
     },
   ];
 
+
+  const categoryImages = {
+    'Electricity': '/images/knowledge-electricity.jpg',
+    'Water': '/images/knowledge-water.jpg',
+    'Roads': '/images/knowledge-roads.jpg',
+    'Traffic Lights': '/images/knowledge-traffic.jpg',
+    'Illegal Dumping': '/images/knowledge-dumping.jpg',
+    'Sewer': '/images/water-team.jpg',
+    'Fallen Trees': '/images/dumping-market.jpg',
+  };
+
   return (
-    <div className="page-wrapper min-h-screen bg-[#F8FAFC] dark:bg-[#181513] py-10 transition-colors duration-200">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
+    <div className="page-wrapper min-h-screen relative overflow-hidden py-10 transition-colors duration-200">
+      <div className="absolute inset-0 z-0">
+        <img src="/images/traffic-intersection.jpg" alt="" className="h-full w-full object-cover object-center" />
+        <div className="absolute inset-0 bg-[#F8FAFC]/90 dark:bg-[#181513]/90 backdrop-blur-[8px]"></div>
+      </div>
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
         {/* PAGE HEADER */}
         <div className="mb-10 border-b border-stone-200 dark:border-stone-800 pb-8">
           <h1 className="text-3xl font-bold text-stone-900 dark:text-[#F7F5F1] mb-3">
@@ -290,17 +305,33 @@ function Knowledge() {
                 {knowledge.map((item) => (
                   <div
                     key={item._id}
-                    className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#241F1C] p-6"
+                    className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#241F1C] overflow-hidden group shadow-sm"
                   >
-                    <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                      <h3 className="text-lg font-semibold text-stone-900 dark:text-[#F7F5F1]">
-                        {item.title || item.category}
-                      </h3>
-
-                      <span className="rounded bg-stone-100 dark:bg-stone-800 px-2.5 py-1 text-xs font-medium text-stone-600 dark:text-stone-300">
-                        {item.category}
-                      </span>
-                    </div>
+                    {categoryImages[item.category] && (
+                      <div className="relative h-40 w-full overflow-hidden">
+                        <img src={categoryImages[item.category]} alt={item.category} className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 backdrop-blur-[3px]"></div>
+                        <div className="absolute inset-x-0 bottom-0 p-6 flex flex-wrap items-end justify-between gap-4">
+                          <h3 className="text-xl font-bold text-white drop-shadow-lg">
+                            {item.title || item.category}
+                          </h3>
+                          <span className="rounded-md bg-white/20 backdrop-blur-md border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm">
+                            {item.category}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    <div className="p-6">
+                      {!categoryImages[item.category] && (
+                        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                          <h3 className="text-lg font-semibold text-stone-900 dark:text-[#F7F5F1]">
+                            {item.title || item.category}
+                          </h3>
+                          <span className="rounded bg-stone-100 dark:bg-stone-800 px-2.5 py-1 text-xs font-medium text-stone-600 dark:text-stone-300">
+                            {item.category}
+                          </span>
+                        </div>
+                      )}
 
                     <div className="grid gap-6 md:grid-cols-2">
                       <div className="space-y-4">
@@ -379,6 +410,7 @@ function Knowledge() {
                         )}
                       </div>
                     )}
+                    </div>
                   </div>
                 ))}
               </div>

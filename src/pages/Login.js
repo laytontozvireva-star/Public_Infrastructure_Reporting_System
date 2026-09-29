@@ -36,8 +36,12 @@ function Login() {
   };
 
   return (
-    <div className="page-wrapper flex items-center justify-center">
-      <div className="w-full max-w-md animate-fade-in">
+    <div className="page-wrapper relative flex items-center justify-center overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <img src="/images/community-trust.jpg" alt="" className="h-full w-full object-cover object-center" />
+        <div className="absolute inset-0 bg-[#F8FAFC]/85 dark:bg-[#181513]/90 backdrop-blur-[8px]"></div>
+      </div>
+      <div className="relative z-10 w-full max-w-md animate-fade-in">
 
         {/* Card */}
         <div className="card p-8 md:p-10">
