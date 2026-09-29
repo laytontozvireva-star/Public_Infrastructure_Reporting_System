@@ -12,6 +12,7 @@ function normalizeText(value = "") {
 
 function getRelevantKnowledge(knowledge, question) {
   const normalizedQuestion = normalizeText(question);
+
   const questionWords = new Set(
     normalizedQuestion
       .split(" ")
@@ -76,7 +77,9 @@ function getRelevantKnowledge(knowledge, question) {
 
     if (
       item.responsibleAuthority &&
-      normalizedQuestion.includes(normalizeText(item.responsibleAuthority))
+      normalizedQuestion.includes(
+        normalizeText(item.responsibleAuthority)
+      )
     ) {
       score += 4;
     }
@@ -91,8 +94,9 @@ function getRelevantKnowledge(knowledge, question) {
     .filter((item) => item.relevanceScore > 0)
     .sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-  // If nothing matches, provide a small amount of knowledge so Gemini
-  // can correctly say that the knowledge base lacks enough information.
+  // If nothing matches, provide a small amount of knowledge
+  // so Gemini can correctly say that the knowledge base lacks
+  // enough information.
   if (relevant.length === 0) {
     return knowledge.slice(0, 3);
   }
@@ -156,7 +160,8 @@ module.exports = async (req, res) => {
       dataset: process.env.SANITY_DATASET || "production",
       apiVersion: "2026-01-01",
       useCdn: false,
-      token: process.env.SANITY_TOKEN || process.env.SANITY_API_TOKEN,
+      token:
+        process.env.SANITY_TOKEN || process.env.SANITY_API_TOKEN,
     });
 
     const knowledge = await sanityClient.fetch(`
@@ -234,92 +239,140 @@ RELEVANT PIRS KNOWLEDGE:
 ${knowledgeText}
 `;
 
-const modelName = "gemini-3.5-flash";
-const maxAttempts = 3;
+    // ---------------------------------------------------------
+    // GEMINI GENERATION
+    // ---------------------------------------------------------
 
-let answer = null;
-let lastError = null;
-let successfulModel = null;
+    const modelName = "gemini-3.5-flash";
+    const maxAttempts = 3;
 
-const model = genAI.getGenerativeModel({
-  model: modelName,
-});
+    let answer = null;
+    let lastError = null;
+    let successfulModel = null;
 
-for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-  try {
-    console.log(
-      `Trying Gemini ${modelName} - attempt ${attempt}/${maxAttempts}`
-    );
+    const model = genAI.getGenerativeModel({
+      model: modelName,
+    });
 
-    const result = await model.generateContent(prompt);
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        console.log(
+          `Trying Gemini ${modelName} - attempt ${attempt}/${maxAttempts}`
+        );
 
-    answer = result.response.text();
+        const result = await model.generateContent(prompt);
 
-    if (answer) {
-      successfulModel = modelName;
+        answer = result.response.text();
 
-      console.log(
-        `Gemini model succeeded: ${modelName} on attempt ${attempt}`
+        if (answer) {
+          successfulModel = modelName;
+
+          console.log(
+            `Gemini model succeeded: ${modelName} on attempt ${attempt}`
+          );
+
+          break;
+        }
+      } catch (error) {
+        lastError = error;
+
+        console.error(
+          `Gemini ${modelName} attempt ${attempt} failed:`,
+          error.message
+        );
+
+        // -----------------------------------------------------
+        // DAILY QUOTA EXCEEDED
+        // Do NOT retry because additional attempts will fail.
+        // -----------------------------------------------------
+
+        const isQuotaExceeded =
+          error?.status === 429 &&
+          (
+            error?.message?.includes("quota") ||
+            error?.message?.includes("Quota exceeded") ||
+            error?.message?.includes("Too Many Requests")
+          );
+
+        if (isQuotaExceeded) {
+          console.error(
+            "Gemini daily quota exceeded. Stopping retries."
+          );
+
+          return res.status(429).json({
+            success: false,
+            error:
+              "The PIRS AI Assistant has reached its daily service limit. Please try again later.",
+            details:
+              "Gemini API free-tier quota has been exceeded for today.",
+          });
+        }
+
+        // -----------------------------------------------------
+        // TEMPORARY GEMINI ERROR
+        // Retry 503 errors only.
+        // -----------------------------------------------------
+
+        const isTemporaryError =
+          error?.status === 503 ||
+          error?.statusText === "Service Unavailable" ||
+          error?.message?.includes("503");
+
+        if (!isTemporaryError || attempt === maxAttempts) {
+          break;
+        }
+
+        const delay = attempt * 1500;
+
+        console.log(
+          `Temporary Gemini error. Retrying in ${delay}ms...`
+        );
+
+        await new Promise((resolve) =>
+          setTimeout(resolve, delay)
+        );
+      }
+    }
+
+    // ---------------------------------------------------------
+    // GEMINI FAILED
+    // ---------------------------------------------------------
+
+    if (!answer) {
+      console.error(
+        "Gemini failed after retries:",
+        lastError
       );
 
-      break;
-    }
-  } catch (error) {
-    lastError = error;
-
-    console.error(
-      `Gemini ${modelName} attempt ${attempt} failed:`,
-      error.message
-    );
-
-    const isTemporaryError =
-      error?.status === 503 ||
-      error?.statusText === "Service Unavailable" ||
-      error?.message?.includes("503");
-
-    if (!isTemporaryError || attempt === maxAttempts) {
-      break;
+      return res.status(503).json({
+        success: false,
+        error:
+          "The PIRS AI Assistant is temporarily unavailable. Please try again in a moment.",
+        details:
+          lastError?.message || "Unknown Gemini error",
+      });
     }
 
-    const delay = attempt * 1500;
+    // ---------------------------------------------------------
+    // VERIFIED SOURCES
+    // ---------------------------------------------------------
 
-    console.log(
-      `Temporary Gemini error. Retrying in ${delay}ms...`
-    );
-
-    await new Promise((resolve) => setTimeout(resolve, delay));
-  }
-}
-
-if (!answer) {
-  console.error("Gemini failed after retries:", lastError);
-
-  return res.status(503).json({
-    success: false,
-    error:
-      "The PIRS AI Assistant is temporarily unavailable. Please try again in a moment.",
-    details: lastError?.message || "Unknown Gemini error",
-  });
-}
-
-  if (!answer) {
-  console.error("All Gemini models failed:", lastError);
-
-  return res.status(500).json({
-    success: false,
-    error: "Gemini could not generate an answer.",
-    details: lastError?.message || "Unknown Gemini error",
-  });
-}
     const sources = relevantKnowledge
       .filter((item) => item.sourceName || item.source)
       .map((item) => ({
         id: item._id,
-        title: item.title || item.category || "PIRS Knowledge Article",
+        title:
+          item.title ||
+          item.category ||
+          "PIRS Knowledge Article",
         category: item.category || null,
         sourceName: item.sourceName || null,
         source: item.source || null,
       }));
+
+    // ---------------------------------------------------------
+    // SUCCESS RESPONSE
+    // ---------------------------------------------------------
 
     return res.status(200).json({
       success: true,
@@ -333,7 +386,8 @@ if (!answer) {
 
     return res.status(500).json({
       success: false,
-      error: "Something went wrong while processing the question.",
+      error:
+        "Something went wrong while processing the question.",
       message: error.message,
     });
   }
