@@ -234,40 +234,73 @@ RELEVANT PIRS KNOWLEDGE:
 ${knowledgeText}
 `;
 
- const models = [
-  "gemini-3.5-flash",
-];
+const modelName = "gemini-3.5-flash";
+const maxAttempts = 3;
 
-    let answer = null;
-    let lastError = null;
-    let successfulModel = null;
+let answer = null;
+let lastError = null;
+let successfulModel = null;
 
-    for (const modelName of models) {
-      try {
-        console.log(`Trying Gemini model: ${modelName}`);
+const model = genAI.getGenerativeModel({
+  model: modelName,
+});
 
-        const model = genAI.getGenerativeModel({
-          model: modelName,
-        });
+for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+  try {
+    console.log(
+      `Trying Gemini ${modelName} - attempt ${attempt}/${maxAttempts}`
+    );
 
-        const result = await model.generateContent(prompt);
+    const result = await model.generateContent(prompt);
 
-        answer = result.response.text();
+    answer = result.response.text();
 
-        if (answer) {
-          successfulModel = modelName;
-          console.log(`Gemini model succeeded: ${modelName}`);
-          break;
-        }
-      } catch (error) {
-        lastError = error;
+    if (answer) {
+      successfulModel = modelName;
 
-        console.error(
-          `Gemini model ${modelName} failed:`,
-          error.message
-        );
-      }
+      console.log(
+        `Gemini model succeeded: ${modelName} on attempt ${attempt}`
+      );
+
+      break;
     }
+  } catch (error) {
+    lastError = error;
+
+    console.error(
+      `Gemini ${modelName} attempt ${attempt} failed:`,
+      error.message
+    );
+
+    const isTemporaryError =
+      error?.status === 503 ||
+      error?.statusText === "Service Unavailable" ||
+      error?.message?.includes("503");
+
+    if (!isTemporaryError || attempt === maxAttempts) {
+      break;
+    }
+
+    const delay = attempt * 1500;
+
+    console.log(
+      `Temporary Gemini error. Retrying in ${delay}ms...`
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+}
+
+if (!answer) {
+  console.error("Gemini failed after retries:", lastError);
+
+  return res.status(503).json({
+    success: false,
+    error:
+      "The PIRS AI Assistant is temporarily unavailable. Please try again in a moment.",
+    details: lastError?.message || "Unknown Gemini error",
+  });
+}
 
   if (!answer) {
   console.error("All Gemini models failed:", lastError);
