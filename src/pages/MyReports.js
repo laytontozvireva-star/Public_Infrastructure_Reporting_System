@@ -87,7 +87,7 @@ function MyReports() {
     <div className="min-h-screen relative overflow-hidden py-10 transition-colors duration-200">
       <div className="absolute inset-0 z-0">
         <img src="/images/repair-workers.jpg" alt="" className="h-full w-full object-cover object-center" />
-        <div className="absolute inset-0 bg-[#F8FAFC]/90 dark:bg-[#181513]/90 backdrop-blur-[8px]"></div>
+        <div className="absolute inset-0 bg-[#F8FAFC]/80 dark:bg-[#181513]/80 backdrop-blur-none"></div>
       </div>
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
 

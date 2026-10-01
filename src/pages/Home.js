@@ -41,22 +41,22 @@ function Home() {
       <section className="relative border-b border-stone-200 dark:border-stone-800/80 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img src="/images/hero-community.jpg" alt="" className="h-full w-full object-cover object-center" />
-          <div className="absolute inset-0 bg-white/90 dark:bg-[#181513]/90 backdrop-blur-[6px]"></div>
+          <div className="absolute inset-0 bg-white/80 dark:bg-[#181513]/80 backdrop-blur-none"></div>
         </div>
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 py-16 lg:py-24 grid lg:grid-cols-[1.02fr_0.98fr] gap-14 items-center min-h-[calc(100vh-4.5rem)]">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-12 grid lg:grid-cols-[1.02fr_0.98fr] gap-8 lg:gap-12 items-center min-h-[calc(100vh-4.5rem)]">
 
           <div className="max-w-2xl">
-            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-stone-900 dark:text-stone-400 mb-6">
+            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-stone-900 dark:text-stone-400 mb-4">
               <span className="h-2 w-2 rounded-full bg-[#10B981]"></span>
               Built for every community
             </p>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-stone-900 dark:text-[#F7F5F1] leading-[1.05] mb-7">
+            <h1 className="text-2xl sm:text-3xl lg:text-3xl font-extrabold tracking-tight text-stone-900 dark:text-[#F7F5F1] leading-[1.1] mb-5">
               Report infrastructure problems.{" "}
               <span className="text-[#FF6C16]">Improve your community.</span>
             </h1>
 
-            <p className="text-lg text-stone-600 dark:text-stone-400 mb-9 max-w-xl leading-relaxed">
+            <p className="text-base sm:text-lg text-stone-600 dark:text-stone-400 mb-8 max-w-xl leading-relaxed">
               PIRS helps citizens report public infrastructure problems, share their location, and keep track of their reports.
             </p>
 
@@ -190,13 +190,13 @@ function Home() {
       </section>
 
       {/* ── 2. QUICK CATEGORY SECTION ─────────────────────────────────── */}
-      <section className="py-24 lg:py-32 bg-stone-50/50 dark:bg-[#1D160E]/50 border-b border-stone-200 dark:border-stone-800/80">
+      <section className="py-12 lg:py-10 bg-stone-50/50 dark:bg-[#1D160E]/50 border-b border-stone-200 dark:border-stone-800/80">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="max-w-2xl mb-12">
             <p className="text-xs font-bold uppercase tracking-widest text-[#FF6C16] mb-3">
               Start a report
             </p>
-            <h2 className="text-4xl font-bold tracking-tight text-stone-900 dark:text-[#F7F5F1] mb-4">
+            <h2 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-[#F7F5F1] mb-4">
               What needs attention?
             </h2>
             <p className="text-lg text-stone-600 dark:text-stone-400">
@@ -233,10 +233,10 @@ function Home() {
       </section>
 
       {/* ── 3. HOW PIRS WORKS ─────────────────────────────────────────── */}
-      <section className="relative py-24 lg:py-32 text-[#F7F5F1] overflow-hidden">
+      <section className="relative py-12 lg:py-10 text-[#F7F5F1] overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img src="/images/road-damaged.jpg" alt="" className="h-full w-full object-cover object-center" />
-          <div className="absolute inset-0 bg-[#181513]/90 backdrop-blur-[6px]"></div>
+          <div className="absolute inset-0 bg-[#181513]/80 backdrop-blur-none"></div>
         </div>
         <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-center mb-24">
@@ -244,7 +244,7 @@ function Home() {
               <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#FF6C16] mb-3">
                 A clear process
               </p>
-              <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
                 How PIRS works
               </h2>
             </div>
@@ -305,14 +305,14 @@ function Home() {
       </section>
 
       {/* ── 4. WHY PIRS / COMMUNITY IMPACT ────────────────────────────── */}
-      <section className="py-24 lg:py-32 bg-white dark:bg-[#181513] border-b border-stone-200 dark:border-stone-800/80">
+      <section className="py-12 lg:py-10 bg-white dark:bg-[#181513] border-b border-stone-200 dark:border-stone-800/80">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-2 lg:items-end mb-16">
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-[#FF6C16] mb-3">
                 Community impact
               </p>
-              <h2 className="text-4xl font-extrabold tracking-tight text-stone-900 dark:text-[#F7F5F1] max-w-xl leading-tight">
+              <h2 className="text-2xl font-extrabold tracking-tight text-stone-900 dark:text-[#F7F5F1] max-w-xl leading-tight">
                 Small reports can make a visible difference.
               </h2>
             </div>
@@ -385,10 +385,10 @@ function Home() {
       </section>
 
       {/* ── 5. KNOWLEDGE + AI ─────────────────────────────────────────── */}
-      <section className="relative py-24 lg:py-32 border-b border-stone-200 dark:border-stone-800/80 overflow-hidden">
+      <section className="relative py-12 lg:py-10 border-b border-stone-200 dark:border-stone-800/80 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img src="/images/ai-citizen.jpg" alt="" className="h-full w-full object-cover object-top" />
-          <div className="absolute inset-0 bg-stone-50/90 dark:bg-[#1D160E]/90 backdrop-blur-[6px]"></div>
+          <div className="absolute inset-0 bg-stone-50/80 dark:bg-[#1D160E]/80 backdrop-blur-none"></div>
         </div>
         <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
 
@@ -397,7 +397,7 @@ function Home() {
               Knowledge + AI
             </p>
 
-            <h2 className="text-4xl font-extrabold tracking-tight text-stone-900 dark:text-[#F7F5F1] mb-6">
+            <h2 className="text-2xl font-extrabold tracking-tight text-stone-900 dark:text-[#F7F5F1] mb-6">
               Not sure what to do?
             </h2>
 
@@ -504,15 +504,15 @@ function Home() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img src="/images/repair-progress.jpg" alt="" className="h-full w-full object-cover object-center" />
-          <div className="absolute inset-0 bg-[#FF6C16]/85 backdrop-blur-[6px]"></div>
+          <div className="absolute inset-0 bg-[#FF6C16]/80 backdrop-blur-none"></div>
         </div>
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 py-16 lg:py-20 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center text-[#F7F5F1]">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-12 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center text-[#F7F5F1]">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-[#F7F5F1]/75 mb-4">
               Your report is a useful first step
             </p>
 
-            <h2 className="text-4xl font-extrabold sm:text-5xl tracking-tight mb-4">
+            <h2 className="text-2xl font-extrabold sm:text-3xl tracking-tight mb-4">
               See an infrastructure problem?
             </h2>
 
