@@ -105,163 +105,172 @@ function AuthorityDashboard() {
   }, [user, authLoading]);
 
   async function updateStatus(reportId, newStatus) {
-  setUpdatingId(reportId);
-  setError("");
+    setUpdatingId(reportId);
+    setError("");
 
-  const completedAt =
-    newStatus === "Completed"
-      ? new Date().toISOString()
-      : null;
+    const completedAt =
+      newStatus === "Completed"
+        ? new Date().toISOString()
+        : null;
 
-  const { data, error: updateError } = await supabase
-    .from("reports")
-    .update({
-      status: newStatus,
-      completed_at: completedAt,
-    })
-    .eq("id", reportId)
-    .select()
-    .single();
+    const { data, error: updateError } = await supabase
+      .from("reports")
+      .update({
+        status: newStatus,
+        completed_at: completedAt,
+      })
+      .eq("id", reportId)
+      .select()
+      .single();
 
-  if (updateError) {
-    setError(updateError.message);
-  } else {
-    setReports((current) =>
-      current.map((report) =>
-        report.id === reportId
+    if (updateError) {
+      setError(updateError.message);
+    } else {
+      setReports((current) =>
+        current.map((report) =>
+          report.id === reportId
+            ? {
+                ...report,
+                ...(data || {}),
+                priority: calculatePriority({
+                  ...report,
+                  ...(data || {}),
+                }),
+              }
+            : report
+        )
+      );
+
+      setSelectedReport((current) =>
+        current && current.id === reportId
           ? {
-              ...report,
+              ...current,
               ...(data || {}),
+              priority: calculatePriority({
+                ...current,
+                ...(data || {}),
+              }),
             }
-          : report
-      )
-    );
+          : current
+      );
+    }
 
-    setSelectedReport((current) =>
-      current && current.id === reportId
-        ? {
-            ...current,
-            ...(data || {}),
-          }
-        : current
-    );
+    setUpdatingId(null);
   }
 
-  setUpdatingId(null);
-}
+  const stats = useMemo(() => {
+    const total = reports.length;
 
-const stats = useMemo(() => {
-  const total = reports.length;
+    const pending = reports.filter(
+      (r) => r.status === "Pending"
+    ).length;
 
-  const pending = reports.filter(
-    (r) => r.status === "Pending"
-  ).length;
+    const inProgress = reports.filter(
+      (r) => r.status === "In Progress"
+    ).length;
 
-  const inProgress = reports.filter(
-    (r) => r.status === "In Progress"
-  ).length;
+    const completed = reports.filter(
+      (r) => r.status === "Completed"
+    ).length;
 
-  const completed = reports.filter(
-    (r) => r.status === "Completed"
-  ).length;
+    const highPriority = reports.filter(
+      (r) => r.priority?.level === "High"
+    ).length;
 
-  const highPriority = reports.filter(
-    (r) => r.priority?.level === "High"
-  ).length;
+    const mediumPriority = reports.filter(
+      (r) => r.priority?.level === "Medium"
+    ).length;
 
-  const mediumPriority = reports.filter(
-    (r) => r.priority?.level === "Medium"
-  ).length;
+    const lowPriority = reports.filter(
+      (r) => r.priority?.level === "Low"
+    ).length;
 
-  const lowPriority = reports.filter(
-    (r) => r.priority?.level === "Low"
-  ).length;
+    const unresolvedHighPriority = reports.filter(
+      (r) =>
+        r.priority?.level === "High" &&
+        r.status !== "Completed"
+    ).length;
 
-  const unresolvedHighPriority = reports.filter(
-    (r) =>
-      r.priority?.level === "High" &&
-      r.status !== "Completed"
-  ).length;
+    const resolutionRate =
+      total > 0
+        ? Math.round((completed / total) * 100)
+        : 0;
 
-  const resolutionRate =
-    total > 0
-      ? Math.round((completed / total) * 100)
-      : 0;
+    const completedReportsWithTime = reports.filter(
+      (r) => r.created_at && r.completed_at
+    );
 
-  const completedReportsWithTime = reports.filter(
-    (r) => r.created_at && r.completed_at
-  );
+    let averageResolutionDays = 0;
 
-  let averageResolutionDays = 0;
+    if (completedReportsWithTime.length > 0) {
+      const totalResolutionTime =
+        completedReportsWithTime.reduce((totalTime, report) => {
+          const createdTime = new Date(
+            report.created_at
+          ).getTime();
 
-  if (completedReportsWithTime.length > 0) {
-    const totalResolutionTime =
-      completedReportsWithTime.reduce((totalTime, report) => {
-        const createdTime = new Date(
-          report.created_at
-        ).getTime();
+          const completedTime = new Date(
+            report.completed_at
+          ).getTime();
 
-        const completedTime = new Date(
-          report.completed_at
-        ).getTime();
+          return totalTime + (completedTime - createdTime);
+        }, 0);
 
-        return totalTime + (completedTime - createdTime);
-      }, 0);
+      averageResolutionDays =
+        totalResolutionTime /
+        completedReportsWithTime.length /
+        (1000 * 60 * 60 * 24);
 
-    averageResolutionDays =
-      totalResolutionTime /
-      completedReportsWithTime.length /
-      (1000 * 60 * 60 * 24);
+      averageResolutionDays =
+        Math.round(averageResolutionDays * 10) / 10;
+    }
 
-    averageResolutionDays =
-      Math.round(averageResolutionDays * 10) / 10;
-  }
-
-  return {
-    total,
-    pending,
-    inProgress,
-    completed,
-    highPriority,
-    mediumPriority,
-    lowPriority,
-    unresolvedHighPriority,
-    resolutionRate,
-    averageResolutionDays,
-  };
-}, [reports]);
+    return {
+      total,
+      pending,
+      inProgress,
+      completed,
+      highPriority,
+      mediumPriority,
+      lowPriority,
+      unresolvedHighPriority,
+      resolutionRate,
+      averageResolutionDays,
+    };
+  }, [reports]);
 
   const filteredReports = useMemo(() => {
-  const filtered = reports.filter((report) => {
-    const matchesStatus =
-      statusFilter === "All" || report.status === statusFilter;
+    const filtered = reports.filter((report) => {
+      const matchesStatus =
+        statusFilter === "All" ||
+        report.status === statusFilter;
 
-    const matchesCategory =
-      categoryFilter === "All" ||
-      report.category === categoryFilter;
+      const matchesCategory =
+        categoryFilter === "All" ||
+        report.category === categoryFilter;
 
-    const matchesPriority =
-      priorityFilter === "All" ||
-      report.priority?.level === priorityFilter;
+      const matchesPriority =
+        priorityFilter === "All" ||
+        report.priority?.level === priorityFilter;
 
-    return (
-      matchesStatus &&
-      matchesCategory &&
-      matchesPriority
+      return (
+        matchesStatus &&
+        matchesCategory &&
+        matchesPriority
+      );
+    });
+
+    return filtered.sort(
+      (a, b) =>
+        (b.priority?.score || 0) -
+        (a.priority?.score || 0)
     );
-  });
-
-  return filtered.sort(
-    (a, b) =>
-      (b.priority?.score || 0) -
-      (a.priority?.score || 0)
-  );
-}, [
-  reports,
-  statusFilter,
-  categoryFilter,
-  priorityFilter,
-]);
+  }, [
+    reports,
+    statusFilter,
+    categoryFilter,
+    priorityFilter,
+  ]);
 
   if (authLoading || loading) {
     return (
@@ -352,6 +361,7 @@ const stats = useMemo(() => {
 
         {/* Main Stats */}
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+
           <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-[#241F1C]">
             <div className="flex items-center justify-between">
               <div>
@@ -423,32 +433,33 @@ const stats = useMemo(() => {
               </div>
             </div>
           </div>
+
+          <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-[#241F1C]">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-stone-500">
+                  Resolution Rate
+                </p>
+
+                <p className="mt-2 text-3xl font-black text-blue-600">
+                  {stats.resolutionRate}%
+                </p>
+              </div>
+
+              <div className="rounded-xl bg-blue-50 p-3 text-blue-600 dark:bg-blue-950/30 dark:text-blue-300">
+                <CheckCircle2 className="h-6 w-6" />
+              </div>
+            </div>
+
+            <p className="mt-2 text-xs text-stone-500">
+              Reports successfully completed
+            </p>
+          </div>
         </div>
-
-        <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-[#241F1C]">
-  <div className="flex items-center justify-between">
-    <div>
-      <p className="text-sm font-medium text-stone-500">
-        Resolution Rate
-      </p>
-
-      <p className="mt-2 text-3xl font-black text-blue-600">
-        {stats.resolutionRate}%
-      </p>
-    </div>
-
-    <div className="rounded-xl bg-blue-50 p-3 text-blue-600 dark:bg-blue-950/30 dark:text-blue-300">
-      <CheckCircle2 className="h-6 w-6" />
-    </div>
-  </div>
-
-  <p className="mt-2 text-xs text-stone-500">
-    Reports successfully completed
-  </p>
-</div>
 
         {/* Priority Stats */}
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
           <div className="rounded-2xl border border-red-200 bg-red-50 p-5 dark:border-red-900 dark:bg-red-950/20">
             <p className="text-sm font-semibold text-red-700 dark:text-red-300">
               High Priority
@@ -490,61 +501,61 @@ const stats = useMemo(() => {
               Routine attention
             </p>
           </div>
+
           <div className="rounded-2xl border border-red-200 bg-white p-5 shadow-sm dark:border-red-900 dark:bg-[#241F1C]">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-red-700 dark:text-red-300">
+                  Urgent Unresolved
+                </p>
 
-            {/* Performance */}
-<div className="mb-6 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-[#241F1C]">
-  <div className="mb-4">
-    <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100">
-      Performance
-    </h2>
+                <p className="mt-2 text-3xl font-black text-red-700 dark:text-red-300">
+                  {stats.unresolvedHighPriority}
+                </p>
+              </div>
 
-    <p className="mt-1 text-sm text-stone-500">
-      How quickly infrastructure reports are being resolved.
-    </p>
-  </div>
+              <div className="rounded-xl bg-red-50 p-3 text-red-600 dark:bg-red-950/30 dark:text-red-300">
+                <TriangleAlert className="h-6 w-6" />
+              </div>
+            </div>
 
-  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <p className="text-sm font-medium text-stone-500">
-        Average Resolution Time
-      </p>
+            <p className="mt-2 text-xs text-stone-500">
+              High-priority reports still requiring action
+            </p>
+          </div>
+        </div>
 
-      <p className="mt-1 text-3xl font-black text-blue-600">
-        {stats.averageResolutionDays}{" "}
-        <span className="text-base font-semibold text-stone-500">
-          days
-        </span>
-      </p>
-    </div>
+        {/* Performance */}
+        <div className="mb-6 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-[#241F1C]">
+          <div className="mb-4">
+            <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100">
+              Performance
+            </h2>
 
-    <div className="max-w-md text-sm leading-6 text-stone-500">
-      Based on reports that have both a submission time and
-      a completion time.
-    </div>
-  </div>
-</div>
+            <p className="mt-1 text-sm text-stone-500">
+              How quickly infrastructure reports are being resolved.
+            </p>
+          </div>
 
-  <div className="flex items-center justify-between">
-    <div>
-      <p className="text-sm font-semibold text-red-700 dark:text-red-300">
-        Urgent Unresolved
-      </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-stone-500">
+                Average Resolution Time
+              </p>
 
-      <p className="mt-2 text-3xl font-black text-red-700 dark:text-red-300">
-        {stats.unresolvedHighPriority}
-      </p>
-    </div>
+              <p className="mt-1 text-3xl font-black text-blue-600">
+                {stats.averageResolutionDays}{" "}
+                <span className="text-base font-semibold text-stone-500">
+                  days
+                </span>
+              </p>
+            </div>
 
-    <div className="rounded-xl bg-red-50 p-3 text-red-600 dark:bg-red-950/30 dark:text-red-300">
-      <TriangleAlert className="h-6 w-6" />
-    </div>
-  </div>
-
-  <p className="mt-2 text-xs text-stone-500">
-    High-priority reports still requiring action
-  </p>
-</div>
+            <div className="max-w-md text-sm leading-6 text-stone-500">
+              Based on reports that have both a submission time
+              and a completion time.
+            </div>
+          </div>
         </div>
 
         {/* Filters */}
@@ -561,7 +572,6 @@ const stats = useMemo(() => {
 
           <div className="grid gap-4 md:grid-cols-3">
 
-            {/* Status Filter */}
             <div>
               <label className="mb-2 block text-sm font-semibold text-stone-700 dark:text-stone-300">
                 Status
@@ -580,7 +590,6 @@ const stats = useMemo(() => {
               </select>
             </div>
 
-            {/* Category Filter */}
             <div>
               <label className="mb-2 block text-sm font-semibold text-stone-700 dark:text-stone-300">
                 Category
@@ -601,7 +610,6 @@ const stats = useMemo(() => {
               </select>
             </div>
 
-            {/* Priority Filter */}
             <div>
               <label className="mb-2 block text-sm font-semibold text-stone-700 dark:text-stone-300">
                 Priority
@@ -626,6 +634,7 @@ const stats = useMemo(() => {
 
         {/* Reports */}
         <div className="rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-stone-700 dark:bg-[#241F1C]">
+
           <div className="border-b border-stone-200 p-5 dark:border-stone-700">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -667,8 +676,8 @@ const stats = useMemo(() => {
                   >
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
 
-                      {/* Report Information */}
                       <div className="min-w-0 flex-1">
+
                         <div className="mb-3 flex flex-wrap items-center gap-2">
                           <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-700 dark:bg-stone-800 dark:text-stone-300">
                             {report.category}
@@ -689,16 +698,14 @@ const stats = useMemo(() => {
                               className={`rounded-full border px-2.5 py-1 text-xs font-bold ${
                                 report.priority.level === "High"
                                   ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
-                                  : report.priority.level ===
-                                    "Medium"
+                                  : report.priority.level === "Medium"
                                   ? "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900 dark:bg-orange-950 dark:text-orange-300"
                                   : "border-green-200 bg-green-50 text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-300"
                               }`}
                             >
                               {report.priority.level === "High"
                                 ? "🔴 HIGH"
-                                : report.priority.level ===
-                                  "Medium"
+                                : report.priority.level === "Medium"
                                 ? "🟠 MEDIUM"
                                 : "🟢 LOW"}{" "}
                               · {report.priority.score}/100
@@ -715,6 +722,7 @@ const stats = useMemo(() => {
                         </p>
 
                         <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-stone-500">
+
                           <span className="inline-flex items-center gap-1.5">
                             <Calendar className="h-4 w-4" />
 
@@ -725,13 +733,22 @@ const stats = useMemo(() => {
                               : "Unknown date"}
                           </span>
 
+                          {report.location_text && (
+                            <span className="inline-flex max-w-full items-center gap-1.5">
+                              <MapPin className="h-4 w-4 shrink-0" />
+
+                              <span className="truncate">
+                                {report.location_text}
+                              </span>
+                            </span>
+                          )}
+
                           {report.latitude !== null &&
                             report.latitude !== undefined &&
                             report.longitude !== null &&
                             report.longitude !== undefined && (
                               <span className="inline-flex items-center gap-1.5">
                                 <MapPin className="h-4 w-4" />
-
                                 GPS available
                               </span>
                             )}
@@ -740,6 +757,7 @@ const stats = useMemo(() => {
 
                       {/* Actions */}
                       <div className="flex flex-col gap-3 sm:flex-row lg:w-auto lg:flex-col">
+
                         <button
                           type="button"
                           onClick={() =>
@@ -759,9 +777,7 @@ const stats = useMemo(() => {
                               e.target.value
                             )
                           }
-                          disabled={
-                            updatingId === report.id
-                          }
+                          disabled={updatingId === report.id}
                           className="rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-700 outline-none focus:border-orange-500 disabled:opacity-60 dark:border-stone-700 dark:bg-[#181411] dark:text-stone-200"
                         >
                           <option value="Pending">
@@ -796,10 +812,14 @@ const stats = useMemo(() => {
             className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl dark:bg-[#241F1C]"
             onClick={(e) => e.stopPropagation()}
           >
+
             {/* Modal Header */}
             <div className="sticky top-0 z-10 flex items-start justify-between border-b border-stone-200 bg-white p-6 dark:border-stone-700 dark:bg-[#241F1C]">
+
               <div className="pr-4">
+
                 <div className="mb-2 flex flex-wrap items-center gap-2">
+
                   <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-700 dark:bg-stone-800 dark:text-stone-300">
                     {selectedReport.category}
                   </span>
@@ -809,8 +829,7 @@ const stats = useMemo(() => {
                       className={`rounded-full border px-3 py-1 text-xs font-bold ${
                         selectedReport.priority.level === "High"
                           ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
-                          : selectedReport.priority.level ===
-                            "Medium"
+                          : selectedReport.priority.level === "Medium"
                           ? "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900 dark:bg-orange-950 dark:text-orange-300"
                           : "border-green-200 bg-green-50 text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-300"
                       }`}
@@ -853,13 +872,13 @@ const stats = useMemo(() => {
                   className={`rounded-xl border p-5 ${
                     selectedReport.priority.level === "High"
                       ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/30"
-                      : selectedReport.priority.level ===
-                        "Medium"
+                      : selectedReport.priority.level === "Medium"
                       ? "border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950/30"
                       : "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30"
                   }`}
                 >
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wider text-stone-500">
                         PIRS Smart Priority
@@ -867,20 +886,16 @@ const stats = useMemo(() => {
 
                       <p
                         className={`mt-1 text-lg font-bold ${
-                          selectedReport.priority.level ===
-                          "High"
+                          selectedReport.priority.level === "High"
                             ? "text-red-700 dark:text-red-300"
-                            : selectedReport.priority.level ===
-                              "Medium"
+                            : selectedReport.priority.level === "Medium"
                             ? "text-orange-700 dark:text-orange-300"
                             : "text-green-700 dark:text-green-300"
                         }`}
                       >
-                        {selectedReport.priority.level ===
-                        "High"
+                        {selectedReport.priority.level === "High"
                           ? "🔴 High Priority"
-                          : selectedReport.priority.level ===
-                            "Medium"
+                          : selectedReport.priority.level === "Medium"
                           ? "🟠 Medium Priority"
                           : "🟢 Low Priority"}
                       </p>
@@ -906,53 +921,54 @@ const stats = useMemo(() => {
                   </div>
 
                   {/* Priority Breakdown */}
-<div className="mt-5">
-  <p className="mb-3 text-xs font-bold uppercase tracking-wider text-stone-500">
-    Why this report received this score
-  </p>
+                  <div className="mt-5">
+                    <p className="mb-3 text-xs font-bold uppercase tracking-wider text-stone-500">
+                      Why this report received this score
+                    </p>
 
-  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-    <div className="rounded-lg bg-white/70 p-3 dark:bg-black/10">
-      <p className="text-xs text-stone-500">
-        Category Impact
-      </p>
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
 
-      <p className="mt-1 text-lg font-black text-stone-900 dark:text-stone-100">
-        +{selectedReport.priority.breakdown.category}
-      </p>
-    </div>
+                      <div className="rounded-lg bg-white/70 p-3 dark:bg-black/10">
+                        <p className="text-xs text-stone-500">
+                          Category Impact
+                        </p>
 
-    <div className="rounded-lg bg-white/70 p-3 dark:bg-black/10">
-      <p className="text-xs text-stone-500">
-        Severity
-      </p>
+                        <p className="mt-1 text-lg font-black text-stone-900 dark:text-stone-100">
+                          +{selectedReport.priority.breakdown.category}
+                        </p>
+                      </div>
 
-      <p className="mt-1 text-lg font-black text-stone-900 dark:text-stone-100">
-        +{selectedReport.priority.breakdown.severity}
-      </p>
-    </div>
+                      <div className="rounded-lg bg-white/70 p-3 dark:bg-black/10">
+                        <p className="text-xs text-stone-500">
+                          Severity
+                        </p>
 
-    <div className="rounded-lg bg-white/70 p-3 dark:bg-black/10">
-      <p className="text-xs text-stone-500">
-        Evidence
-      </p>
+                        <p className="mt-1 text-lg font-black text-stone-900 dark:text-stone-100">
+                          +{selectedReport.priority.breakdown.severity}
+                        </p>
+                      </div>
 
-      <p className="mt-1 text-lg font-black text-stone-900 dark:text-stone-100">
-        +{selectedReport.priority.breakdown.evidence}
-      </p>
-    </div>
+                      <div className="rounded-lg bg-white/70 p-3 dark:bg-black/10">
+                        <p className="text-xs text-stone-500">
+                          Evidence
+                        </p>
 
-    <div className="rounded-lg bg-white/70 p-3 dark:bg-black/10">
-      <p className="text-xs text-stone-500">
-        Report Age
-      </p>
+                        <p className="mt-1 text-lg font-black text-stone-900 dark:text-stone-100">
+                          +{selectedReport.priority.breakdown.evidence}
+                        </p>
+                      </div>
 
-      <p className="mt-1 text-lg font-black text-stone-900 dark:text-stone-100">
-        +{selectedReport.priority.breakdown.age}
-      </p>
-    </div>
-  </div>
-</div>
+                      <div className="rounded-lg bg-white/70 p-3 dark:bg-black/10">
+                        <p className="text-xs text-stone-500">
+                          Report Age
+                        </p>
+
+                        <p className="mt-1 text-lg font-black text-stone-900 dark:text-stone-100">
+                          +{selectedReport.priority.breakdown.age}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -1013,16 +1029,33 @@ const stats = useMemo(() => {
                     Location
                   </p>
 
-                  {selectedReport.latitude !== null &&
-                  selectedReport.latitude !== undefined &&
-                  selectedReport.longitude !== null &&
-                  selectedReport.longitude !== undefined ? (
-                    <p className="mt-1 font-bold text-stone-900 dark:text-stone-100">
-                      GPS coordinates available
-                    </p>
+                  {selectedReport.location_text ? (
+                    <div className="mt-2">
+                      <p className="font-bold text-stone-900 dark:text-stone-100">
+                        {selectedReport.location_text}
+                      </p>
+
+                      <p className="mt-1 text-xs text-stone-500">
+                        Manually provided location
+                      </p>
+                    </div>
+                  ) : selectedReport.latitude !== null &&
+                    selectedReport.latitude !== undefined &&
+                    selectedReport.longitude !== null &&
+                    selectedReport.longitude !== undefined ? (
+                    <div className="mt-2">
+                      <p className="font-bold text-stone-900 dark:text-stone-100">
+                        GPS coordinates available
+                      </p>
+
+                      <p className="mt-1 text-xs text-stone-500">
+                        {Number(selectedReport.latitude).toFixed(5)},{" "}
+                        {Number(selectedReport.longitude).toFixed(5)}
+                      </p>
+                    </div>
                   ) : (
                     <p className="mt-1 font-bold text-stone-500">
-                      No GPS location
+                      No location provided
                     </p>
                   )}
                 </div>
@@ -1051,6 +1084,7 @@ const stats = useMemo(() => {
                 </p>
 
                 <div className="grid gap-3 sm:grid-cols-3">
+
                   <button
                     type="button"
                     onClick={() =>
