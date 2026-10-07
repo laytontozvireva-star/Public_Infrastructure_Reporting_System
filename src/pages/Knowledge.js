@@ -19,10 +19,11 @@ function Knowledge() {
   const [loadingKnowledge, setLoadingKnowledge] = useState(true);
   const [knowledgeError, setKnowledgeError] = useState("");
 
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [asking, setAsking] = useState(false);
-  const [askError, setAskError] = useState("");
+ const [question, setQuestion] = useState("");
+ const [answer, setAnswer] = useState("");
+ const [sources, setSources] = useState([]);
+ const [asking, setAsking] = useState(false);
+ const [askError, setAskError] = useState("");
 
   useEffect(() => {
     async function loadKnowledge() {
@@ -57,6 +58,7 @@ function Knowledge() {
     setAsking(true);
     setAskError("");
     setAnswer("");
+    setSources([]);
 
     try {
       const response = await fetch("/api/ask", {
@@ -80,6 +82,7 @@ function Knowledge() {
       }
 
       setAnswer(data.answer);
+      setSources(data.sources || []);
     } catch (err) {
       console.error("AI Assistant error:", err);
 
@@ -93,10 +96,11 @@ function Knowledge() {
   }
 
   function handleExample(example) {
-    setQuestion(example);
-    setAnswer("");
-    setAskError("");
-  }
+  setQuestion(example);
+  setAnswer("");
+  setSources([]);
+  setAskError("");
+}
 
   const examples = [
     {
@@ -207,6 +211,7 @@ function Knowledge() {
                   onClick={() => {
                     setQuestion("");
                     setAnswer("");
+                    setSources([]);
                     setAskError("");
                   }}
                   className="inline-flex items-center justify-center rounded-lg border border-stone-300 dark:border-stone-600 px-6 py-2.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors hover:bg-stone-50 dark:hover:bg-stone-800"
@@ -262,6 +267,48 @@ function Knowledge() {
                 <div className="px-5 py-4 prose prose-slate dark:prose-invert max-w-none text-sm text-stone-700 dark:text-stone-300 prose-headings:text-stone-900 dark:prose-headings:text-[#F7F5F1] prose-a:text-[#FF6C16] dark:prose-a:text-[#FF6C16]">
                   <ReactMarkdown>{answer}</ReactMarkdown>
                 </div>
+
+                {sources.length > 0 && (
+  <div className="border-t border-stone-200 dark:border-stone-700 px-5 py-4">
+    <h4 className="mb-3 text-sm font-semibold text-stone-900 dark:text-[#F7F5F1]">
+      Verified Sources
+    </h4>
+
+    <div className="space-y-2">
+      {sources.map((source) => (
+        <div
+          key={source.id}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#241F1C] px-4 py-3"
+        >
+          <div>
+            <p className="text-sm font-medium text-stone-900 dark:text-[#F7F5F1]">
+              {source.title}
+            </p>
+
+            {source.sourceName && (
+              <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                {source.sourceName}
+                {source.category ? ` • ${source.category}` : ""}
+              </p>
+            )}
+          </div>
+
+          {source.source && (
+            <a
+              href={source.source}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-[#FF6C16] hover:underline"
+            >
+              View Source
+              <ExternalLink size={12} />
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
               </div>
             )}
           </div>

@@ -2,7 +2,7 @@ module.exports = async (req, res) => {
   try {
     const projectId = process.env.SANITY_PROJECT_ID;
     const dataset = process.env.SANITY_DATASET || "production";
-    const token = process.env.SANITY_API_TOKEN;
+    const token =process.env.SANITY_TOKEN || process.env.SANITY_API_TOKEN;
 
     console.log("Project ID exists:", !!projectId);
     console.log("Dataset:", dataset);

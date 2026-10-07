@@ -24,3 +24,5 @@ yarn-error.log*
 
 .vercel
 .env
+lovable_source.html
+source2.html
